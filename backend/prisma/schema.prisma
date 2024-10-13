@@ -32,21 +32,30 @@ model User {
 model UserToken {
   id        Int      @id @default(autoincrement())
   token     String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
 }
 
+model Category {
+  id           Int      @id @default(autoincrement())
+  categoriName String   @db.VarChar(100)
+  description  String?
+  createdAt    DateTime @default(now())
+  teamCategory Team[]
+}
+
 model Team {
-  id          Int          @id @default(autoincrement())
-  name        String       @db.VarChar(125)
-  category    String       @db.VarChar(50)
-  institution String
-  createdAt   DateTime     @default(now())
-  teamMembers TeamMember[]
-  proposal    Proposal[]
-  submission  Submission[]
+  id           Int          @id @default(autoincrement())
+  name         String       @db.VarChar(125)
+  categoryID   Int
+  teamCategory Category     @relation(fields: [categoryID], references: [id])
+  institution  String
+  createdAt    DateTime     @default(now())
+  teamMembers  TeamMember[]
+  proposal     Proposal[]
+  submission   Submission[]
 }
 
 enum RoleTeamMember {
@@ -57,9 +66,9 @@ enum RoleTeamMember {
 model TeamMember {
   id        Int            @id @default(autoincrement())
   teamId    Int
-  team      Team           @relation(fields: [id], references: [id])
-  userId    String         @unique
-  user      User           @relation(fields: [userId], references: [id])
+  team      Team           @relation(fields: [teamId], references: [id])
+  userId    String?        @unique
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
   role      RoleTeamMember
   createdAt DateTime       @default(now())
 }

@@ -1,14 +1,22 @@
 import { Router } from "express";
-import { Request, Response } from "express";
-import { register } from "../controller/Authenticetion";
+// import { getAllCategory } from "../controllers/CategoryController";
+import { getAllUser, getUserId } from "../controllers/UserController";
+
 
 const router = Router();
 
-router.get('/', (req: Request, res: Response) => {
+router.get('/', (req, res) => {
+    const timeStamp = new Date().toISOString();
     res.json({
-        success: true, msg: "Selamat datang di api KMIPN, ini rahasia."
+        success: true,
+        msg: 'Wellcome to API',
+        userAgent: req.headers['user-agent'],
+        ip: req.ip,
+        timeStamp: timeStamp,
+        apiVersion: "1.0.0"
     });
 });
 
-router.get('/test', register)
+router.get('/users', getAllUser);
+router.get('/users/:id', getUserId);
 export default router;
