@@ -3,7 +3,7 @@ import { ResponseApi } from "../types/types";
 import { getAllUsers, getUserById } from "../services/UserService";
 import { AppError } from "../utils/AppError";
 
-export const getAllUser = async (req: Request, res: Response) => {
+export const getAllUser = async (req: Request, res: Response<ResponseApi>) => {
     try {
         const users = await getAllUsers();
         return res.json({ success: true, msg: "success retrived data", data: users })
@@ -22,7 +22,7 @@ export const getAllUser = async (req: Request, res: Response) => {
     }
 }
 
-export const getUserId = async (req: Request, res: Response) => {
+export const getUserId = async (req: Request, res: Response<ResponseApi>) => {
     try {
         const params = req.params;
         const user = await getUserById(String(params.id));
