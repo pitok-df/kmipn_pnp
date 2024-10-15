@@ -1,0 +1,72 @@
+import { db } from "../config/database"
+import { AppError } from "../utils/AppError";
+import { hashPassword } from "../utils/HashPassword";
+import crypto from "crypto";
+import dotenv from "dotenv";
+import { sendEmail } from "../utils/NodeMailer";
+import { Delete } from "./UserService";
+import path from "path";
+import { readHtmlFile } from "../utils/readHtmlFile";
+import { replacePlaceholders } from "../utils/replacePlaceholder";
+import { findToken } from "./UserTokenService";
+
+dotenv.config();
+
+export const registerService = async (email: string, password: string, name: string) => {
+    // cek email sudah tersedia atau belum
+    const existingUser = await db.user.findUnique({
+        where: { email }
+    });
+
+    // jika email sudah tersedia lepar error
+    if (existingUser) throw new AppError("User already exists", 400);
+
+    // enkripsi password untuk disimpan ke databases
+    const hashedPassword = await hashPassword(password);
+
+    // membuat user baru
+    const newUser = await db.user.create({ data: { name, email, password: hashedPassword } });
+
+    // membuat verifikasi token dengan dependency crypto
+    const verivicationToken = crypto.randomBytes(32).toString("hex");
+    const tokenExpiryDate = new Date(); // set token expire
+    tokenExpiryDate.setHours(tokenExpiryDate.getHours() + 1)
+
+    // membuat token untuk user
+    await db.userToken.create({ data: { token: verivicationToken, userId: newUser.id, expiresAt: tokenExpiryDate } });
+
+    // mengirim email verifikasi ke user
+    const filePath = path.join(__dirname, '../templates/VerivicationEmail.html')
+    let emailContent = await readHtmlFile(filePath);
+    const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verivicationToken}`;
+    const placeholders = {
+        "{{ verificationLink }}": verificationLink,
+        "{{ type_of_action }}": "Verify email",
+        "{{ name }}": name
+    };
+    emailContent = replacePlaceholders(emailContent, placeholders)
+    const sendEmailSuccess = await sendEmail(newUser.email, "Verify email", emailContent);
+
+    // jika email verifikasi gagal terkirim maka lepar error dan hapus user
+    if (!sendEmailSuccess) {
+        Delete(newUser.id);
+        throw new AppError("Failed send verivication email", 400);
+    }
+
+    // kembalikan data user
+    return newUser;
+}
+
+export const verifyTokenService = async (token: string) => {
+    const usertToken = await findToken(token);
+
+    // melakukan pengecekan apakah tokan valid
+    if (!usertToken) throw new AppError("Invalid or expired token", 400);
+
+    // melakukan pengecekan apakah token sudah expire atau belum
+    if (usertToken.expiresAt < new Date()) throw new AppError("Token expired", 400);
+
+    // hapus token dari table user token setelah proses berhasil
+    await db.userToken.delete({ where: { id: usertToken.id } });
+    return true;
+}

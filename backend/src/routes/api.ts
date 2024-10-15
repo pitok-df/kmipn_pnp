@@ -1,8 +1,6 @@
 import { Router } from "express";
-// import { getAllCategory } from "../controllers/CategoryController";
-import { getAllUser, getUserId } from "../controllers/UserController";
-import { GetAllCategory } from "../controllers/CategoryController";
-
+import { AllUser, DeleteUser, GetUserById } from "../controllers/Usercontroller";
+import { register, verifyToken } from "../controllers/AuthController";
 
 const router = Router();
 
@@ -18,7 +16,9 @@ router.get('/', (req, res) => {
     });
 });
 
-router.get('/users', getAllUser);
-router.get('/users/:id', getUserId);
-router.get('/categories', GetAllCategory)
+router.get('/users', AllUser);
+router.get('/users/:id', GetUserById);
+router.post('/register', register);
+router.delete('/users/:id', DeleteUser);
+router.get('verify-email', verifyToken);
 export default router;

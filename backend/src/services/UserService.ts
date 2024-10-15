@@ -1,35 +1,20 @@
-import { PrismaClient, RoleUser } from "@prisma/client";
-import { hashPassword } from "../utils/hashUtils";
+import { db } from "../config/database"
 import { AppError } from "../utils/AppError";
 
-const prisma = new PrismaClient();
-
-export const getAllUsers = async () => {
-    const users = await prisma.user.findMany();
+export const GetAllUser = async () => {
+    const users = await db.user.findMany();
     return users;
 }
 
-export const getUserById = async (id: string) => {
-    const users = await prisma.user.findUnique({ where: { id } });
-    if (!users) throw new AppError("user not found", 404);
-    return users;
-}
-
-export const registerUser = async (email: string, password: string, name: string, role: RoleUser) => {
-    const hashedPassword = await hashPassword(password)
-    const user = await prisma.user.create({
-        data: { email: email, name: name, password: hashedPassword, role: role }
-    });
-
+export const GetByID = async (id: string) => {
+    const user = await db.user.findUnique({ where: { id }, include: { userToken: true } });
+    if (!user) throw new AppError("User not found", 404);
     return user;
 }
 
-export const emailExist = async (email: string) => {
-    const existedEmail = await prisma.user.findUnique({
-        where: {
-            email
-        }
-    });
-    if (existedEmail) return true;
-    return false;
+export const Delete = async (id: string) => {
+    const user = await db.user.findUnique({ where: { id } });
+    if (!user) throw new AppError("User not found", 404);
+    await db.user.delete({ where: { id } });
+    return user;
 }

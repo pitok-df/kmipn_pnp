@@ -23,6 +23,7 @@ model User {
   email      String      @unique @db.VarChar(125)
   password   String      @db.VarChar(255)
   name       String      @db.VarChar(255)
+  verified   Boolean     @default(false)
   role       RoleUser    @default(participant)
   createdAt  DateTime    @default(now())
   userToken  UserToken?
@@ -31,7 +32,7 @@ model User {
 
 model UserToken {
   id        Int      @id @default(autoincrement())
-  token     String
+  token     String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @unique
   expiresAt DateTime
