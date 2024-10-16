@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { AllUser, DeleteUser, GetUserById } from "../controllers/Usercontroller";
+import { addUser, AllUser, DeleteUser, GetUserById } from "../controllers/Usercontroller";
 import { login, logout, refreshToken, register, verifyTokens } from "../controllers/AuthController";
 import { authenticateJWT } from "../middlewares/tokenAuth";
 
@@ -20,6 +20,7 @@ router.get('/', authenticateJWT, (req, res) => {
 });
 
 router.get('/users', authenticateJWT, AllUser);
+router.post('/users', authenticateJWT, addUser);
 router.get('/users/:id', authenticateJWT, GetUserById);
 router.post('/register', register);
 router.post('/login', login);
