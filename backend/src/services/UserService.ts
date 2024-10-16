@@ -8,8 +8,11 @@ export const GetAllUser = async () => {
 }
 
 export const GetByID = async (id: string) => {
-    const user = await db.user.findUnique({ where: { id }, include: { userToken: true } });
+    // mencari data user berdasarkan id
+    const user = await db.user.findUnique({ where: { id } });
+    // jika data user tidak tidak ditemukan maka lempar error
     if (!user) throw new AppError("User not found", 404);
+    // jika data user ditemukan kembalikan data user
     return user;
 }
 
