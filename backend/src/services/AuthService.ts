@@ -1,6 +1,6 @@
 import { db } from "../config/database"
 import { AppError } from "../utils/AppError";
-import { hashPassword } from "../utils/HashPassword";
+import { comparePassword, hashPassword } from "../utils/HashPassword";
 import crypto from "crypto";
 import dotenv from "dotenv";
 import { sendEmail } from "../utils/NodeMailer";
@@ -47,7 +47,7 @@ export const registerService = async (email: string, password: string, name: str
     emailContent = replacePlaceholders(emailContent, placeholders)
     const sendEmailSuccess = await sendEmail(newUser.email, "Verify email", emailContent);
 
-    // jika email verifikasi gagal terkirim maka lepar error dan hapus user
+    // jika email verifikasi gagal terkirim maka lempar error dan hapus user
     if (!sendEmailSuccess) {
         Delete(newUser.id);
         throw new AppError("Failed send verivication email", 400);
@@ -62,11 +62,24 @@ export const verifyTokenService = async (token: string) => {
 
     // melakukan pengecekan apakah tokan valid
     if (!usertToken) throw new AppError("Invalid or expired token", 400);
-
     // melakukan pengecekan apakah token sudah expire atau belum
     if (usertToken.expiresAt < new Date()) throw new AppError("Token expired", 400);
-
+    // update kolom verified jadi true
+    await db.user.update({
+        where: { id: usertToken.userId },
+        data: { verified: true }
+    });
     // hapus token dari table user token setelah proses berhasil
     await db.userToken.delete({ where: { id: usertToken.id } });
     return true;
+}
+
+export const loginService = async (email: string, password: string) => {
+    const user = await db.user.findUnique({ where: { email } });
+    if (!user) throw new AppError("User not found", 404);
+    // cek apakah email sudah di verifikasi
+    if (!user?.verified) throw new AppError("Please verify your email.", 401);
+    // cek apakah user tersedia dan password tersedia
+    if (!user || !(await comparePassword(password, user.password))) throw new AppError("Invalid credential", 401);
+    return user;
 }

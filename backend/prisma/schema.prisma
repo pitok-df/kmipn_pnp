@@ -26,7 +26,7 @@ model User {
   verified   Boolean     @default(false)
   role       RoleUser    @default(participant)
   createdAt  DateTime    @default(now())
-  userToken  UserToken?
+  userToken  UserToken[]
   teamMember TeamMember?
 }
 
@@ -34,7 +34,7 @@ model UserToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String   @unique
+  userId    String
   expiresAt DateTime
   createdAt DateTime @default(now())
 }
