@@ -1,36 +1,32 @@
+import React from "react";
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import 'aos/dist/aos.css';
-import "./globals.css";
-import Navbar from "@/components/Navbar";
+import { Inter } from "next/font/google";
+import 'simplebar-react/dist/simplebar.min.css';
+import "./css/globals.css";
+import { Flowbite, ThemeModeScript } from "flowbite-react";
+import customTheme from "@/utils/theme/custom-theme";
+import { AuthProvider } from "@/utils/AuthContext";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "KMIPN",
-  description: "website created.",
+  title: "MaterialM-Nextjs-Free",
 };
 
 export default function RootLayout({
-  children
-}: Readonly<{
+  children,
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Navbar />
-        {children}
+      <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <ThemeModeScript />
+      </head>
+      <body className={`${inter.className}`}>
+        <Flowbite theme={{ theme: customTheme }}>
+          <AuthProvider>{children}</AuthProvider></Flowbite>
       </body>
     </html>
   );

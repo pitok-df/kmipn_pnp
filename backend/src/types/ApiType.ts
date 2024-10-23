@@ -2,8 +2,10 @@ import { $Enums } from "@prisma/client";
 
 export interface ResponseApi {
     success: boolean,
+    statusCode: number,
     msg: string,
-    data?: any
+    data?: any,
+    errors?: any
 }
 
 export interface User {

@@ -75,11 +75,11 @@ export const verifyTokenService = async (token: string) => {
 }
 
 export const loginService = async (email: string, password: string) => {
-    const user = await db.user.findUnique({ where: { email } });
+    const user = await db.user.findUnique({ where: { email }, include: { teamMember: true } });
     if (!user) throw new AppError("User not found", 404);
     // cek apakah email sudah di verifikasi
-    if (!user?.verified) throw new AppError("Please verify your email.", 401);
+    if (!user?.verified) throw new AppError("Please verify your email.", 400);
     // cek apakah user tersedia dan password tersedia
-    if (!user || !(await comparePassword(password, user.password))) throw new AppError("Invalid credential", 401);
+    if (!user || !(await comparePassword(password, user.password))) throw new AppError("Invalid credential", 400);
     return user;
 }

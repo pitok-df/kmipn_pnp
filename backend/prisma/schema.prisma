@@ -28,6 +28,7 @@ model User {
   createdAt  DateTime    @default(now())
   userToken  UserToken[]
   teamMember TeamMember?
+  assesment  Assesment[]
 }
 
 model UserToken {
@@ -47,12 +48,23 @@ model Category {
   teamCategory Team[]
 }
 
+model Lecture {
+  id        Int      @id @default(autoincrement())
+  name      String
+  nip       String   @db.VarChar(18)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  team      Team[]
+}
+
 model Team {
   id           Int          @id @default(autoincrement())
   name         String       @db.VarChar(125)
   categoryID   Int
   teamCategory Category     @relation(fields: [categoryID], references: [id])
   institution  String
+  lectureID    Int
+  lecture      Lecture      @relation(fields: [lectureID], references: [id], onDelete: Cascade)
   createdAt    DateTime     @default(now())
   teamMembers  TeamMember[]
   proposal     Proposal[]
@@ -71,6 +83,11 @@ model TeamMember {
   userId    String?        @unique
   user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
   role      RoleTeamMember
+  nim       String         @db.VarChar(12)
+  email     String
+  no_WA     String
+  prodi     String
+  fileKTM   String
   createdAt DateTime       @default(now())
 }
 
@@ -81,12 +98,24 @@ enum statusProposal {
 }
 
 model Proposal {
-  id        Int            @id @default(autoincrement())
-  teamId    Int            @unique
-  team      Team           @relation(fields: [teamId], references: [id])
-  fileLink  String?
-  status    statusProposal
-  createdAt DateTime       @default(now())
+  id         Int            @id @default(autoincrement())
+  teamId     Int            @unique
+  title      String         @db.VarChar(125)
+  team       Team           @relation(fields: [teamId], references: [id])
+  fileLink   String?
+  status     statusProposal @default(uploaded)
+  createdAt  DateTime       @default(now())
+  assessment Assesment[]
+}
+
+model Assesment {
+  id         Int      @id @default(autoincrement())
+  proposalID Int
+  proposal   Proposal @relation(fields: [proposalID], references: [id], onDelete: Cascade)
+  juriID     String
+  user       User     @relation(fields: [juriID], references: [id], onDelete: Cascade)
+  score      Float
+  createdAt  DateTime @default(now())
 }
 
 enum Round {

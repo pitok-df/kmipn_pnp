@@ -1,9 +1,34 @@
-export default function NotFound() {
-    return (
-        <div className="flex flex-col items-center justify-center h-screen">
-            <h1 className="text-4xl font-bold mb-4">404 - Page Not Found</h1>
-            <p className="text-lg">Sorry, the page you are looking for does not exist.</p>
-            <a href="/" className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg">Go Back Home</a>
+import Image from "next/image";
+import React from "react";
+import ErrorImg from "/public/images/backgrounds/errorimg.svg";
+import { Button } from "flowbite-react";
+import Link from "next/link";
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Error-404"
+};
+const Error = () => {
+  return (
+    <>
+      <div className="h-screen flex items-center justify-center bg-white dark:bg-darkgray">
+        <div className="text-center">
+          <Image src={ErrorImg} alt="error" className="mb-4" />
+          <h1 className="text-ld text-4xl mb-6">Opps!!!</h1>
+          <h6 className="text-xl text-ld">
+            This page you are looking for could not be found.
+          </h6>
+          <Button
+            color={"primary"}
+            as={Link}
+            href="/"
+            className="w-fit mt-6 mx-auto"
+          >
+            Go Back to Home
+          </Button>
         </div>
-    );
-}
+      </div>
+    </>
+  );
+};
+
+export default Error;

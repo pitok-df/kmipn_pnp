@@ -3,36 +3,35 @@ import crypto from "crypto";
 import { User } from '@prisma/client';
 import { AppError } from '../utils/AppError';
 
-const JWT_SECRET = "123456";
+const JWT_SECRET = process.env.JWT_SECRET || "123456";
 const ENCRYPTION_KEY = process.env.JWT_SECRET || "pitokganteng121203";
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "pitokganteng121203";
 
 export const generateToken = (user: User) => {
     const token = jwt.sign({ user }, JWT_SECRET, { expiresIn: "1m" })
-    return encrypToken(token);
+    return token;
 }
 
 export const generateRefreshToken = (user: User) => {
     const refreshToken = jwt.sign({ user }, JWT_REFRESH_SECRET, { expiresIn: "7d" });
-    return encrypToken(refreshToken);
+    return refreshToken;
 }
 
 export const refreshTokenJwt = (refreshToken: string) => {
-    const token = decryptToken(refreshToken);
     const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || '';
-    return jwt.verify(token, JWT_REFRESH_SECRET, (err, data: any) => {
-        if (err) throw new AppError("Invalid refresh token", 403);
+    return jwt.verify(refreshToken, JWT_REFRESH_SECRET, (err, data: any) => {
+        if (err) throw new AppError("Invalid refresh token", 401);
         return generateToken(data.user);
     });
 }
 
 export const verifyToken = (encryptedToken: string) => {
     try {
-        // Dekripsi token terlebih dahulu
-        const decryptedToken = decryptToken(encryptedToken);
-
         // Verifikasi token JWT
-        return jwt.verify(decryptedToken, JWT_SECRET);
+        return jwt.verify(encryptedToken, JWT_SECRET, (err, decode) => {
+            if (err) throw new AppError("Invalid token", 401);
+            return decode;
+        });
     } catch (error: any) {
         throw new Error('Token verification failed: ' + error.message);
     }
@@ -48,7 +47,7 @@ const encrypToken = (token: string) => {
     return iv.toString('hex') + ':' + encryted + ":" + cipher.getAuthTag().toString('hex');
 }
 
-export const decryptToken = (encryptedToken: string) => {
+const decryptToken = (encryptedToken: string) => {
     try {
         const [ivHex, encryptedText, authTagHex] = encryptedToken.split(':');
         const iv = Buffer.from(ivHex, 'hex');
