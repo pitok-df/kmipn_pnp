@@ -51,7 +51,6 @@ const SidebarLayout = () => {
 
                       {item.children?.map((child, index) => (
                         <React.Fragment key={child.id && index}>
-                          {child.hakAkses === userRole}
                           {child.children ? (
                             <div className="collpase-items">
                               <NavCollapse item={child} />

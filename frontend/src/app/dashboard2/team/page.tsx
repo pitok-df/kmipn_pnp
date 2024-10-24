@@ -1,7 +1,11 @@
 'use client'
 
 import { Button, FileInput, Label, Select, TextInput } from "flowbite-react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import CategoryLomba from "./components/Category";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/ReactToastify.css"
 
 export default function team() {
     const [teamName, setTeamName] = useState('');
@@ -9,28 +13,74 @@ export default function team() {
     const [asalPoliteknik, setAsalPoliteknik] = useState('');
     const [dosenPendaming, setDosenPendaming] = useState('');
     const [nipDosen, setNipDosen] = useState('');
-    const [proposal, setProposal] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [proposal, setProposal] = useState<File | null>(null);
+    const fileInputRef = useRef(null); // Ref for file input
 
     const [teamMembers, setTeamMembers] = useState([
-        { nama_anggota: '', nim: '', no_wa: '', email: '', prodi: '', foto_ktm: null },
-        { nama_anggota: '', nim: '', no_wa: '', email: '', prodi: '', foto_ktm: null },
-        { nama_anggota: '', nim: '', no_wa: '', email: '', prodi: '', foto_ktm: null }
+        { nama_anggota: '', nim: '', no_wa: '', email: '', prodi: '', foto_ktm: null as File | null },
+        { nama_anggota: '', nim: '', no_wa: '', email: '', prodi: '', foto_ktm: null as File | null },
+        { nama_anggota: '', nim: '', no_wa: '', email: '', prodi: '', foto_ktm: null as File | null }
     ]);
 
-    const handleInputChange = (index, field, value) => {
+    const handleInputChange = (index: number, field: 'nama_anggota' | 'nim' | 'no_wa' | 'email' | 'prodi' | 'foto_ktm', value: string | File) => {
         const newTeamMembers = [...teamMembers];
-        newTeamMembers[index][field] = value;
+        if (field === 'foto_ktm') {
+            newTeamMembers[index][field] = value as File;
+        } else {
+            newTeamMembers[index][field] = value as string;
+        }
         setTeamMembers(newTeamMembers);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Data Tim:', teamMembers);
-        console.log('file proposal: ', proposal)
+        // ubah state is loading jadi true
+        setIsLoading(true);
+        try {
+            // simpan data dosen ke api
+            const lecture = await axios.post("http://localhost:2003/api/v1/lecture",
+                { name: dosenPendaming, nip: nipDosen },
+                { headers: { "Content-Type": "application/json" }, withCredentials: true });
+
+            // ambil id dosen yang baru saja dibuat
+            const lectureID = lecture.data.data.id;
+
+            console.log("save data team");
+            // buat data team
+            const team = await axios.post("http://localhost:2003/api/v1/team",
+                { name: teamName, categori: kategori, instansi: asalPoliteknik, dosen: lectureID },
+                { headers: { "Content-Type": "application/json" }, withCredentials: true });
+
+            // ambil id team yang baru saja dibuat
+            const idTeam = team.data.data.id;
+            console.log("save data proposal");
+
+            const proposalr = await axios.post("http://localhost:2003/api/v1/proposal?type=proposal",
+                { teamID: idTeam, file_proposal: proposal },
+                { headers: { "Content-Type": "multipart/form-data;application/json" }, withCredentials: true });
+
+            toast.success("Successfully saved data team.")
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setTeamName("")
+            setNipDosen("")
+            setIsLoading(false);
+            setAsalPoliteknik("")
+            setDosenPendaming("")
+            setKategori("")
+            setProposal(null)
+
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
     };
 
     return (
         <>
+            <ToastContainer />
             <div className="rounded-lg dark:shadow-dark-md shadow-md bg-white dark:bg-darkgray p-6 relative w-full break-words">
                 <form onSubmit={handleSubmit}>
                     <h5 className="card-title">Data Team</h5>
@@ -44,7 +94,8 @@ export default function team() {
                                         </div>
                                         <TextInput
                                             id="name"
-                                            onChange={(e) => { setTeamName(e.target.value) }}
+                                            value={teamName}
+                                            onChange={(e) => setTeamName(e.target.value)}
                                             type="text"
                                             placeholder="Nama Tim"
                                             required
@@ -53,13 +104,11 @@ export default function team() {
                                     </div>
                                     <div>
                                         <div className="mb-2 block">
-                                            <Label htmlFor="kategori" value="Kategori Lomba" />
+                                            <Label htmlFor="kategori3" value="Kategori Lomba" />
                                         </div>
-                                        <Select id="kategori" onChange={(e) => { setKategori(e.target.value) }} required className="select-rounded">
-                                            <option>Game</option>
-                                            <option>IOT</option>
-                                            <option>Proposal</option>
-                                            <option>Cipta Inovasi</option>
+                                        <Select id="kategori3" value={kategori} onChange={(e) => { setKategori(e.target.value) }} required className="select-rounded">
+                                            <option value="">-- pilih kategori --</option>
+                                            <CategoryLomba />
                                         </Select>
                                     </div>
                                     <div>
@@ -69,6 +118,7 @@ export default function team() {
                                         <TextInput
                                             id="instansi"
                                             type="text"
+                                            value={asalPoliteknik}
                                             onChange={(e) => { setAsalPoliteknik(e.target.value) }}
                                             placeholder="Politeknik Negeri Padang"
                                             required
@@ -87,6 +137,7 @@ export default function team() {
                                             onChange={(e) => { setDosenPendaming(e.target.value) }}
                                             id="dosen"
                                             type="text"
+                                            value={dosenPendaming}
                                             placeholder="Fazrol Rozi, M,Sc"
                                             required
                                             className="form-control"
@@ -100,6 +151,7 @@ export default function team() {
                                             onChange={(e) => { setNipDosen(e.target.value) }}
                                             id="nip_dosen"
                                             type="number"
+                                            value={nipDosen}
                                             placeholder="888889978772138213"
                                             required
                                             className="form-control"
@@ -112,7 +164,11 @@ export default function team() {
                                         <FileInput
                                             id="proposal"
                                             required
-                                            onChange={(e) => { setProposal(e.target.files[0]) }}
+                                            ref={fileInputRef}
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) setProposal(file)
+                                            }}
                                         />
                                     </div>
                                 </div>
@@ -120,7 +176,7 @@ export default function team() {
                         </div>
                     </div>
 
-                    {teamMembers.map((member, index) => (
+                    {/* {teamMembers.map((member, index) => (
                         <div key={index}>
                             <h5 className="card-title mt-7">Anggota Team {index + 1}</h5>
                             <div className="mt-4">
@@ -209,7 +265,11 @@ export default function team() {
                                                     id={`foto_ktm_${index}`}
                                                     accept="image/jpeg,png"
                                                     required
-                                                    onChange={(e) => handleInputChange(index, 'foto_ktm', e.target.files[0])}
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) handleInputChange(index, 'foto_ktm', file)
+                                                    }
+                                                    }
                                                 />
                                             </div>
                                         </div>
@@ -217,11 +277,12 @@ export default function team() {
                                 </div>
                             </div>
                         </div>
-                    ))}
+                    ))} */}
                     <div className="col-span-12 mt-5 flex gap-3">
-                        <Button className="bg-primary" type="submit">Submit</Button>
+                        <Button className="bg-primary" type="submit" disabled={isLoading}>{isLoading ? "Proses..." : "Submit"}</Button>
                     </div>
                 </form>
+
             </div>
         </>
     );

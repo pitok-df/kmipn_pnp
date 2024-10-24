@@ -5,6 +5,10 @@ import { authenticateJWT } from "../middlewares/tokenAuth";
 import { getAllCategory } from "../controllers/CategoryController";
 import { isParticipant } from "../middlewares/permission";
 import { loginValidator } from "../validators/LoginValidator";
+import { createTeam } from "../controllers/TeamController";
+import { createLecture } from "../controllers/LectureController";
+import { uploadFile } from "../middlewares/mutlerUploadFile";
+import { createProposal } from "../controllers/ProposalController";
 
 const router = Router();
 
@@ -31,7 +35,9 @@ router.post('/verify-email', verifyEmail);
 router.post('/refresh-token', refreshToken);
 router.post('/logout', logout);
 
-router.get("/complete-team", authenticateJWT, isParticipant);
+router.post("/lecture", createLecture);
+router.post("/team", createTeam);
+router.post("/proposal", uploadFile.single("file_proposal"), createProposal)
 
 router.get('/categories', getAllCategory);
 export default router;

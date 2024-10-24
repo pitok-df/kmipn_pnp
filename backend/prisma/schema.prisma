@@ -99,8 +99,8 @@ enum statusProposal {
 
 model Proposal {
   id         Int            @id @default(autoincrement())
-  teamId     Int            @unique
   title      String         @db.VarChar(125)
+  teamId     Int            @unique
   team       Team           @relation(fields: [teamId], references: [id])
   fileLink   String?
   status     statusProposal @default(uploaded)

@@ -17,7 +17,6 @@ const AuthLogin = () => {
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -71,6 +70,7 @@ const AuthLogin = () => {
             id="email"
             type="email"
             sizing="md"
+            placeholder="example@gmail.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -84,6 +84,7 @@ const AuthLogin = () => {
             id="userpwd"
             type="password"
             sizing="md"
+            placeholder="your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
