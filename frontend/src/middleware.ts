@@ -1,16 +1,18 @@
 import { getCookie, setCookie } from 'cookies-next';
 import { jwtDecode } from 'jwt-decode';
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server';
 
 interface userDecode {
-    user: { role: string },
+    user: { role: string, teamMember: boolean },
     exp: number
 }
 
 export function middleware(request: NextRequest) {
     const token = request.cookies.get('refreshToken');
     const url = request.nextUrl.clone();
+    const currentUrl = new URL(request.url);
+    const path = currentUrl.pathname;
 
     console.log(getCookie("accessToken"));
 

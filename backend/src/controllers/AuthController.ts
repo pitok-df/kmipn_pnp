@@ -45,11 +45,10 @@ export const verifyEmail = async (req: Request, res: Response<ResponseApi>) => {
     }
 }
 
-interface typeCookie {
-    exp: number
-}
 
 export const login = async (req: Request, res: Response<ResponseApi>) => {
+    const existsAccessToken = req.cookies.accessToken;
+    if (existsAccessToken) { return res.status(400).json({ success: false, statusCode: 400, msg: "You already login." }) }
     const { email, password } = req.body;
     try {
         const errors = validationResult(req);
@@ -60,14 +59,7 @@ export const login = async (req: Request, res: Response<ResponseApi>) => {
 
         const userValid = await loginService(email, password);
         const accessToken = generateToken(userValid);
-        const refreshToken = generateRefreshToken(userValid);
 
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -75,11 +67,10 @@ export const login = async (req: Request, res: Response<ResponseApi>) => {
             maxAge: 15 * 60 * 60 * 1000
         });
 
-        const user = verifyToken(accessToken);
+        const user: any = verifyToken(accessToken);
         return res.status(200).json({
             success: true, statusCode: 200, msg: "Successfully logged in", data: {
-                accessToken: accessToken,
-                user
+                user: user.user
             }
         });
     } catch (error) {

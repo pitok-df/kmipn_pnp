@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import apiClient from '@/utils/apiClient';
 
-// dotenv.config()
 export default function CategoryLomba() {
     const [categories, setCategori] = useState([])
 
@@ -17,7 +16,7 @@ export default function CategoryLomba() {
         } catch (error) {
             console.log(error)
         }
-    }, [])
+    }, []);
 
 
     return categories.map((categori: any) => (

@@ -1,5 +1,4 @@
 
-import React from "react";
 import NameUser from "@/app/components/dashboard/NameUser";
 import LogoutButton from "./LogoutButton";
 const Profile = () => {
