@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import crypto from "crypto";
 import { User } from '@prisma/client';
 import { AppError } from '../utils/AppError';
@@ -8,12 +8,12 @@ const ENCRYPTION_KEY = process.env.JWT_SECRET || "pitokganteng121203";
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "pitokganteng121203";
 
 export const generateToken = (user: User) => {
-    const token = jwt.sign({ user }, JWT_SECRET, { expiresIn: "1m" })
+    const token = jwt.sign({ user }, JWT_SECRET, { expiresIn: "5m" })
     return token;
 }
 
 export const generateRefreshToken = (user: User) => {
-    const refreshToken = jwt.sign({ user }, JWT_REFRESH_SECRET, { expiresIn: "7d" });
+    const refreshToken = jwt.sign({ user }, JWT_REFRESH_SECRET, { expiresIn: "1d" });
     return refreshToken;
 }
 
@@ -65,4 +65,9 @@ const decryptToken = (encryptedToken: string) => {
     } catch (error: any) {
         throw new Error('Failed to decrypt token: ' + error.message);
     }
+}
+
+export const decodeJWT = (token: string) => {
+    const decode = jwt.decode(token);
+    return decode as JwtPayload;
 }

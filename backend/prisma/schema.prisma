@@ -67,8 +67,8 @@ model Team {
   lecture      Lecture      @relation(fields: [lectureID], references: [id], onDelete: Cascade)
   createdAt    DateTime     @default(now())
   teamMembers  TeamMember[]
-  proposal     Proposal[]
-  submission   Submission[]
+  proposal     Proposal?
+  submission   Submission?
 }
 
 enum RoleTeamMember {
@@ -84,6 +84,7 @@ model TeamMember {
   user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
   role      RoleTeamMember
   nim       String         @db.VarChar(12)
+  name      String
   email     String
   no_WA     String
   prodi     String
@@ -105,12 +106,12 @@ model Proposal {
   fileLink   String?
   status     statusProposal @default(uploaded)
   createdAt  DateTime       @default(now())
-  assessment Assesment[]
+  assessment Assesment?
 }
 
 model Assesment {
   id         Int      @id @default(autoincrement())
-  proposalID Int
+  proposalID Int      @unique
   proposal   Proposal @relation(fields: [proposalID], references: [id], onDelete: Cascade)
   juriID     String
   user       User     @relation(fields: [juriID], references: [id], onDelete: Cascade)
@@ -131,7 +132,7 @@ enum statusSubmission {
 
 model Submission {
   id        Int              @id @default(autoincrement())
-  teamId    Int
+  teamId    Int              @unique
   team      Team             @relation(fields: [teamId], references: [id])
   round     Round
   status    statusSubmission @default(pending)

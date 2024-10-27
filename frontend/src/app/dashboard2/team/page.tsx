@@ -2,10 +2,18 @@
 
 import { Button, FileInput, Label, Select, TextInput } from "flowbite-react";
 import React, { useRef, useState } from "react";
-import CategoryLomba from "./components/Category";
-import axios from "axios";
+import CategoryLomba from "../components/Category";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/ReactToastify.css"
+import { Metadata } from "next";
+import ListPerguruangTinggi from "../components/ListPT";
+import TeamMemberForm from "../components/TeamMemberForm";
+import apiClient from "@/utils/apiClient";
+
+// export const metadata: Metadata = {
+//     title: "Dashboard Team",
+//     description: "Manage your team",
+// };
 
 export default function team() {
     const [teamName, setTeamName] = useState('');
@@ -15,7 +23,7 @@ export default function team() {
     const [nipDosen, setNipDosen] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [proposal, setProposal] = useState<File | null>(null);
-    const fileInputRef = useRef(null); // Ref for file input
+    const fileInputRef = useRef(null);
 
     const [teamMembers, setTeamMembers] = useState([
         { nama_anggota: '', nim: '', no_wa: '', email: '', prodi: '', foto_ktm: null as File | null },
@@ -39,31 +47,44 @@ export default function team() {
         setIsLoading(true);
         try {
             // simpan data dosen ke api
-            const lecture = await axios.post("http://localhost:2003/api/v1/lecture",
-                { name: dosenPendaming, nip: nipDosen },
-                { headers: { "Content-Type": "application/json" }, withCredentials: true });
+            const lecture = await apiClient.post(`${process.env.NEXT_PUBLIC_BASEURL_BACKEND}/lecture`,
+                { name: dosenPendaming, nip: nipDosen }, { headers: { "Content-Type": "application/json" } });
 
             // ambil id dosen yang baru saja dibuat
             const lectureID = lecture.data.data.id;
-
             console.log("save data team");
             // buat data team
-            const team = await axios.post("http://localhost:2003/api/v1/team",
-                { name: teamName, categori: kategori, instansi: asalPoliteknik, dosen: lectureID },
-                { headers: { "Content-Type": "application/json" }, withCredentials: true });
+            const team = await apiClient.post(`${process.env.NEXT_PUBLIC_BASEURL_BACKEND}/team`,
+                { name: teamName, categori: kategori, instansi: asalPoliteknik, dosen: lectureID }, { headers: { "Content-Type": "application/json" } });
 
             // ambil id team yang baru saja dibuat
             const idTeam = team.data.data.id;
             console.log("save data proposal");
+            const proposalr = await apiClient.post(`${process.env.NEXT_PUBLIC_BASEURL_BACKEND}/proposal?type=proposal`,
+                { teamID: idTeam, file_proposal: proposal }, { headers: { "Content-Type": "multipart/form-data;application/json" } });
 
-            const proposalr = await axios.post("http://localhost:2003/api/v1/proposal?type=proposal",
-                { teamID: idTeam, file_proposal: proposal },
-                { headers: { "Content-Type": "multipart/form-data;application/json" }, withCredentials: true });
+            teamMembers.forEach(async (item, index) => {
+                if (index === 0) {
+                    const createTeamMember = await apiClient.post(`${process.env.NEXT_PUBLIC_BASEURL_BACKEND}/team-member?type=ktm`, {
+                        teamId: idTeam, userId: localStorage.getItem("idUser"), role: "leader", nim: item.nim, email: item.email,
+                        no_WA: item.no_wa, prodi: item.prodi, file_ktm: item.foto_ktm, name: item.nama_anggota
+                    }, { headers: { "Content-Type": "multipart/form-data;application/json" } });
+                    if (!createTeamMember) { return };
+                } else {
+                    const createTeamMember = await apiClient.post(`${process.env.NEXT_PUBLIC_BASEURL_BACKEND}/team-member?type=ktm`, {
+                        teamId: idTeam, userId: null, role: "member", nim: item.nim, email: item.email,
+                        no_WA: item.no_wa, prodi: item.prodi, file_ktm: item.foto_ktm, name: item.nama_anggota
+                    }, { headers: { "Content-Type": "multipart/form-data;application/json" } });
+                    if (!createTeamMember) { return };
+                }
+            });
+
+            if (fileInputRef.current) {
+                const file: any = fileInputRef.current;
+                file.value = ''
+            }
 
             toast.success("Successfully saved data team.")
-        } catch (error) {
-            console.log(error);
-        } finally {
             setTeamName("")
             setNipDosen("")
             setIsLoading(false);
@@ -71,10 +92,16 @@ export default function team() {
             setDosenPendaming("")
             setKategori("")
             setProposal(null)
+            setTeamMembers([
+                { email: '', foto_ktm: null, nama_anggota: '', nim: '', no_wa: '', prodi: '' },
+                { email: '', foto_ktm: null, nama_anggota: '', nim: '', no_wa: '', prodi: '' },
+                { email: '', foto_ktm: null, nama_anggota: '', nim: '', no_wa: '', prodi: '' }
+            ])
 
-            if (fileInputRef.current) {
-                fileInputRef.current.value = '';
-            }
+        } catch (error) {
+            toast.error("Failed save data team.")
+            setIsLoading(false);
+            console.log(error);
         }
     };
 
@@ -115,7 +142,11 @@ export default function team() {
                                         <div className="mb-2 block">
                                             <Label htmlFor="instansi" value="Asal Politeknik" />
                                         </div>
-                                        <TextInput
+                                        {/* <Select> */}
+                                        {/* <option value="">--Pilih Asal Perguruan Tinggi</option> */}
+                                        <ListPerguruangTinggi value={asalPoliteknik} onChange={(e) => { setAsalPoliteknik(e.target.value) }} className="select-rounded" />
+                                        {/* </Select> */}
+                                        {/* <TextInput
                                             id="instansi"
                                             type="text"
                                             value={asalPoliteknik}
@@ -123,7 +154,7 @@ export default function team() {
                                             placeholder="Politeknik Negeri Padang"
                                             required
                                             className="form-control"
-                                        />
+                                        /> */}
                                     </div>
                                 </div>
                             </div>
@@ -176,6 +207,9 @@ export default function team() {
                         </div>
                     </div>
 
+                    {teamMembers.map((member, index) => (
+                        <TeamMemberForm key={index} index={index} member={member} handleInputChange={handleInputChange} refFile={fileInputRef} />
+                    ))}
                     {/* {teamMembers.map((member, index) => (
                         <div key={index}>
                             <h5 className="card-title mt-7">Anggota Team {index + 1}</h5>

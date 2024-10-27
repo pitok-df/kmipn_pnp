@@ -4,8 +4,8 @@ import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useAuth } from "@/utils/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
 interface JwtPayload {
   exp: number; // Waktu expire dalam format Unix (seconds)
@@ -30,9 +30,12 @@ const AuthLogin = () => {
       }, { withCredentials: true });
 
       if (response.data.success) {
-        const decoded: JwtPayload = jwtDecode(response.data.data.accessToken);
-        localStorage.setItem('user', JSON.stringify(decoded.user));
-
+        const accessToken = response.data.data.accessToken;
+        localStorage.setItem("accessToken", accessToken);
+        Cookies.set("accessToken", accessToken);
+        const decoded: JwtPayload = jwtDecode(accessToken);
+        localStorage.setItem('user_name', decoded.user.name);
+        localStorage.setItem('idUser', decoded.user.id);
         // redirect ke halaman dashboard
         const user = response.data.data.user.user;
         window.location.href = "/dashboard2";
@@ -57,7 +60,7 @@ const AuthLogin = () => {
   return (
     <>
       {errorMsg && (
-        <div className="text-red-500 mb-4 bg-red-100 p-5">
+        <div className="text-red-500 mb-4 bg-red-100 p-3">
           {errorMsg}
         </div>
       )}
@@ -95,13 +98,13 @@ const AuthLogin = () => {
             <Checkbox id="accept" className="checkbox" />
             <Label
               htmlFor="accept"
-              className="opacity-90 font-normal cursor-pointer"
+              className="opacity-90 font-medium cursor-pointer"
             >
-              Remember this Device
+              Remember me
             </Label>
           </div>
           <Link href={"/"} className="text-primary text-sm font-medium">
-            Forgot Password ?
+            Forgot Password?
           </Link>
         </div>
         <Button

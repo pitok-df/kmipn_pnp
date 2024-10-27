@@ -9,7 +9,7 @@ interface JwtPayload {
     user: any
 }
 
-const Test = () => {
+const Test = async () => {
     const [isTokenExpired, setIsTokenExpired] = useState(false);
     const accessToken = useAuthToken(); // Hook hanya dipanggil sekali di sini
 

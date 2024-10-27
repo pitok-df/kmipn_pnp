@@ -6,11 +6,8 @@ const NameUser = () => {
     const [name, setName] = useState<string>("");
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const storedUser = localStorage.getItem("user");
-            if (storedUser) {
-                const data = JSON.parse(storedUser);
-                setName(data.name || "Guest");
-            }
+            const userName = localStorage.getItem("user_name");
+            setName(userName || "Guest");
         }
     }, [])
     return name ? name : "Loading...";

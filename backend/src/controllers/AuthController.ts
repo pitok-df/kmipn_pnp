@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { AppError } from "../utils/AppError";
 import { ResponseApi } from "../types/ApiType";
 import { loginService, registerService, verifyTokenService } from "../services/AuthService";
-import { generateRefreshToken, generateToken, refreshTokenJwt, verifyToken } from "../config/jwt";
+import { decodeJWT, generateRefreshToken, generateToken, refreshTokenJwt, verifyToken } from "../config/jwt";
 import jwt from 'jsonwebtoken'
 import { validationResult } from "express-validator";
 
@@ -45,15 +45,17 @@ export const verifyEmail = async (req: Request, res: Response<ResponseApi>) => {
     }
 }
 
+interface typeCookie {
+    exp: number
+}
+
 export const login = async (req: Request, res: Response<ResponseApi>) => {
     const { email, password } = req.body;
     try {
-        const cookie = req.cookies.refreshToken;
-        if (cookie) return res.status(400).json({ success: false, statusCode: 400, msg: "You already login" })
-
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ success: false, statusCode: 400, msg: "Validation require", errors: errors.array() });
+
         }
 
         const userValid = await loginService(email, password);
@@ -101,8 +103,9 @@ export const refreshToken = (req: Request, res: Response<ResponseApi>) => {
     try {
         const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) throw new AppError("Refresh token not found", 400);
-        const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || '';
+        const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
         const newAccessToken = refreshTokenJwt(refreshToken);
+
         jwt.verify(refreshToken, JWT_REFRESH_SECRET, (error: any, data: any) => {
             return res.status(200).json({
                 success: true,
@@ -132,5 +135,6 @@ export const refreshToken = (req: Request, res: Response<ResponseApi>) => {
 
 export const logout = (req: Request, res: Response<ResponseApi>) => {
     res.clearCookie('refreshToken'); // Hapus refresh token dari cookie
+    res.clearCookie('accessToken'); // Hapus access token dari cookie
     res.status(200).json({ success: true, statusCode: 200, msg: 'Logged out successfully' });
 };

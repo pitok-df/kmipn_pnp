@@ -5,7 +5,9 @@ import LogoutButton from "./LogoutButton";
 const Profile = () => {
   return (
     <div className="hidden sm:flex  justify-between items-center">
-      <p className="text-black px-5"><NameUser /></p>
+      <p className="text-black px-5">
+        <NameUser />
+      </p>
       <LogoutButton />
     </div>
   );

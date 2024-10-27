@@ -3,6 +3,7 @@ import axios from "axios";
 import { Button, Modal } from "flowbite-react";
 import Link from "next/link";
 import React, { useState } from "react"
+import Cookies from "js-cookie"
 
 const LogoutButton = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -13,8 +14,9 @@ const LogoutButton = () => {
         const response = await axios.post('http://localhost:2003/api/v1/logout', {}, { withCredentials: true });
 
         if (response.data.success) {
-            localStorage.setItem("accessToken", "");
-            localStorage.setItem("user", "");
+            Cookies.remove("accessToken");
+            Cookies.remove("refreshToken");
+            localStorage.removeItem("accessToken");
             window.location.href = "/auth/login";
         }
     }

@@ -1,15 +1,16 @@
 'use client'
 
-import axios from "axios";
 import { useEffect, useState } from "react";
+import apiClient from '@/utils/apiClient';
 
+// dotenv.config()
 export default function CategoryLomba() {
     const [categories, setCategori] = useState([])
 
     useEffect(() => {
         try {
             const fetchCategories = async () => {
-                const categori = await axios.get("http://localhost:2003/api/v1/categories");
+                const categori = await apiClient.get(`${process.env.NEXT_PUBLIC_BASEURL_BACKEND}/categories`);
                 setCategori(categori.data.data)
             }
             fetchCategories();
