@@ -9,6 +9,7 @@ import { Metadata } from "next";
 import ListPerguruangTinggi from "../components/ListPT";
 import TeamMemberForm from "../components/TeamMemberForm";
 import apiClient from "@/utils/apiClient";
+import { getCookie } from "cookies-next";
 
 // export const metadata: Metadata = {
 //     title: "Dashboard Team",
@@ -16,6 +17,8 @@ import apiClient from "@/utils/apiClient";
 // };
 
 export default function team() {
+    console.log(getCookie("accessToken"));
+
     const [teamName, setTeamName] = useState('');
     const [kategori, setKategori] = useState('');
     const [asalPoliteknik, setAsalPoliteknik] = useState('');
@@ -92,16 +95,13 @@ export default function team() {
             setDosenPendaming("")
             setKategori("")
             setProposal(null)
-            setTeamMembers([
-                { email: '', foto_ktm: null, nama_anggota: '', nim: '', no_wa: '', prodi: '' },
-                { email: '', foto_ktm: null, nama_anggota: '', nim: '', no_wa: '', prodi: '' },
-                { email: '', foto_ktm: null, nama_anggota: '', nim: '', no_wa: '', prodi: '' }
-            ])
+            setTeamMembers([...teamMembers])
 
-        } catch (error) {
-            toast.error("Failed save data team.")
-            setIsLoading(false);
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || "Failed to save team data."
+            toast.error(errorMessage)
             console.log(error);
+            setIsLoading(false);
         }
     };
 

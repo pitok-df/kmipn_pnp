@@ -1,4 +1,4 @@
-import Logo from "@/app/dashboard2/layout/shared/logo/Logo";
+import Logo from "@/app/dashboard/layout/shared/logo/Logo";
 import React from "react";
 import Link from "next/link";
 import type { Metadata } from "next";

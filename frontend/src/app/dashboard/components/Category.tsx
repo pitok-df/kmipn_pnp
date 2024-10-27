@@ -21,6 +21,6 @@ export default function CategoryLomba() {
 
 
     return categories.map((categori: any) => (
-        <option value={categori.id}>{categori.categoriName}</option>
+        <option key={"ctgry" + categori.id} value={categori.id}>{categori.categoriName}</option>
     ))
 }

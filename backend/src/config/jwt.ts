@@ -8,7 +8,7 @@ const ENCRYPTION_KEY = process.env.JWT_SECRET || "pitokganteng121203";
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "pitokganteng121203";
 
 export const generateToken = (user: User) => {
-    const token = jwt.sign({ user }, JWT_SECRET, { expiresIn: "5m" })
+    const token = jwt.sign({ user }, JWT_SECRET, { expiresIn: "15m" })
     return token;
 }
 

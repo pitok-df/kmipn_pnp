@@ -26,7 +26,7 @@ router.get('/', authenticateJWT, (req, res) => {
     });
 });
 
-router.get('/users', AllUser);
+router.get('/users', authenticateJWT, AllUser);
 router.post('/users', authenticateJWT, addUser);
 router.get('/users/:id', authenticateJWT, GetUserById);
 router.post('/register', register);

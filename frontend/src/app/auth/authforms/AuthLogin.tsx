@@ -2,10 +2,10 @@
 
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import Cookies from "js-cookie";
+import { setCookie } from 'cookies-next'
 
 interface JwtPayload {
   exp: number; // Waktu expire dalam format Unix (seconds)
@@ -32,13 +32,13 @@ const AuthLogin = () => {
       if (response.data.success) {
         const accessToken = response.data.data.accessToken;
         localStorage.setItem("accessToken", accessToken);
-        Cookies.set("accessToken", accessToken);
+        setCookie("accessToken", accessToken);
         const decoded: JwtPayload = jwtDecode(accessToken);
         localStorage.setItem('user_name', decoded.user.name);
         localStorage.setItem('idUser', decoded.user.id);
         // redirect ke halaman dashboard
-        const user = response.data.data.user.user;
-        window.location.href = "/dashboard2";
+
+        window.location.href = "/dashboard";
       } else {
         // Jika login gagal, tampilkan pesan error
         setErrorMsg(response.data.msg || "Login failed");

@@ -12,6 +12,7 @@
     "@iconify/react": "4.1.1",
     "@tabler/icons-react": "3.5.0",
     "axios": "^1.7.7",
+    "cookies-next": "^4.3.0",
     "dotenv": "^16.4.5",
     "flowbite": "2.3.0",
     "flowbite-react": "0.10.1",

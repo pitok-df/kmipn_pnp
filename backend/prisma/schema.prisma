@@ -16,6 +16,7 @@ datasource db {
 enum RoleUser {
   participant
   admin
+  juri
 }
 
 model User {
@@ -61,11 +62,13 @@ model Team {
   id           Int          @id @default(autoincrement())
   name         String       @db.VarChar(125)
   categoryID   Int
-  teamCategory Category     @relation(fields: [categoryID], references: [id])
+  teamCategory Category     @relation(fields: [categoryID], references: [id], onDelete: Cascade)
   institution  String
   lectureID    Int
   lecture      Lecture      @relation(fields: [lectureID], references: [id], onDelete: Cascade)
+  verified     Boolean      @default(false)
   createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @default(now()) @updatedAt
   teamMembers  TeamMember[]
   proposal     Proposal?
   submission   Submission?
@@ -79,7 +82,7 @@ enum RoleTeamMember {
 model TeamMember {
   id        Int            @id @default(autoincrement())
   teamId    Int
-  team      Team           @relation(fields: [teamId], references: [id])
+  team      Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
   userId    String?        @unique
   user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
   role      RoleTeamMember
@@ -102,7 +105,7 @@ model Proposal {
   id         Int            @id @default(autoincrement())
   title      String         @db.VarChar(125)
   teamId     Int            @unique
-  team       Team           @relation(fields: [teamId], references: [id])
+  team       Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
   fileLink   String?
   status     statusProposal @default(uploaded)
   createdAt  DateTime       @default(now())
@@ -133,7 +136,7 @@ enum statusSubmission {
 model Submission {
   id        Int              @id @default(autoincrement())
   teamId    Int              @unique
-  team      Team             @relation(fields: [teamId], references: [id])
+  team      Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
   round     Round
   status    statusSubmission @default(pending)
   createdAt DateTime         @default(now())

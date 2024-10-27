@@ -1,6 +1,7 @@
-
 import axios from "axios";
+import { setCookie } from "cookies-next";
 import dotenv from 'dotenv'
+import Cookies from "js-cookie";
 
 dotenv.config()
 
@@ -30,10 +31,14 @@ apiClient.interceptors.response.use(
                 const response = await axios.post(`${BASEURL_BACKEND}/refresh-token`, {}, { withCredentials: true });
 
                 localStorage.setItem("accessToken", response.data.data.accessToken);
+                setCookie("accessToken", response.data.data.accessToken);
                 return apiClient(originalRequest);
             } catch (error) {
                 // Jika refresh gagal, redirect ke halaman login atau logout
-                // window.location.href = '/auth/login';
+                localStorage.removeItem("user_name")
+                localStorage.removeItem("idUser")
+                localStorage.setItem("sessionExpired", "true");
+                window.location.href = '/auth/login';
                 return Promise.reject(error);
             }
         }

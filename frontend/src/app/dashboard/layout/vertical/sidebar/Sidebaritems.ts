@@ -25,19 +25,21 @@ import { uniqueId } from "lodash";
 const SidebarContent: MenuItem[] = [
   {
     heading: "Dashboards",
+    id: Number(uniqueId()),
     children: [
       {
         name: "Dashboard",
         icon: "solar:widget-add-line-duotone",
         id: uniqueId(),
         hakAkses: 'admin',
-        url: "/dashboard2",
+        url: "/dashboard",
       },
       {
         name: "Team",
+        id: uniqueId(),
         hakAkses: 'participant',
         icon: "solar:users-group-rounded-bold-duotone",
-        url: "/dashboard2/team"
+        url: "/dashboard/team"
       }
     ],
   }

@@ -39,6 +39,7 @@ export const getTeamMemberByUserID = async (req: Request, res: Response<Response
             linkProposal: teamMember.team.proposal?.fileLink,
             statusProposal: teamMember.team.proposal?.status || 'pending',
             statusSubmission: teamMember.team.submission?.status || 'pending',
+            verified: teamMember.team.verified,
             teamMembers: teamMember.team.teamMembers.map((member) => ({
                 name: `${member.name} ${member.role === "leader" ? ' (Ketua)' : ''}`,
                 nim: member.nim,
