@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import apiClient from '@/utils/apiClient';
+import axios from "axios";
 
 export default function CategoryLomba() {
     const [categories, setCategori] = useState([])
@@ -9,7 +9,7 @@ export default function CategoryLomba() {
     useEffect(() => {
         try {
             const fetchCategories = async () => {
-                const categori = await apiClient.get(`${process.env.NEXT_PUBLIC_BASEURL_BACKEND}/categories`);
+                const categori = await axios.get('/api/v1/categories', { withCredentials: true });
                 setCategori(categori.data.data)
             }
             fetchCategories();

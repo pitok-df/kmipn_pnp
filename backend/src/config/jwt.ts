@@ -2,6 +2,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import crypto from "crypto";
 import { User } from '@prisma/client';
 import { AppError } from '../utils/AppError';
+import { Request } from 'express';
 
 const JWT_SECRET = process.env.JWT_SECRET || "123456";
 const ENCRYPTION_KEY = process.env.JWT_SECRET || "pitokganteng121203";
@@ -65,6 +66,20 @@ const decryptToken = (encryptedToken: string) => {
     } catch (error: any) {
         throw new Error('Failed to decrypt token: ' + error.message);
     }
+}
+
+type userType = {
+    name: string;
+    id: string;
+    email: string;
+    password: string;
+    verified: boolean;
+}
+
+export const userLogin = (req: Request) => {
+    const token = req.cookies.accessToken;
+    const decode = decodeJWT(token);
+    return decode.user as userType;
 }
 
 export const decodeJWT = (token: string) => {

@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import { createTeamMember, getTeamMemberByUserIDService } from "../services/TeamMemberService";
 import { AppError } from "../utils/AppError";
 import { ResponseApi } from "../types/ApiType";
+import { userLogin } from "../config/jwt";
 
 export const storeTeamMember = async (req: Request, res: Response<ResponseApi>) => {
     try {
@@ -28,8 +29,9 @@ export const storeTeamMember = async (req: Request, res: Response<ResponseApi>) 
 
 export const getTeamMemberByUserID = async (req: Request, res: Response<ResponseApi>) => {
     try {
-        const { id } = req.params;
-        const teamMember = await getTeamMemberByUserIDService(String(id));
+        const user = userLogin(req);
+        console.log(user.id);
+        const teamMember = await getTeamMemberByUserIDService(String(user.id));
         const dataMap = {
             teamName: teamMember.team.name,
             categori: teamMember.team.teamCategory.categoriName,

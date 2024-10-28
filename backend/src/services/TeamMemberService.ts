@@ -23,6 +23,5 @@ export const getTeamMemberByUserIDService = async (userID: string) => {
         }
     });
     if (!teamMemberByUser) throw new AppError("Team member not found", 404);
-
     return teamMemberByUser;
 }

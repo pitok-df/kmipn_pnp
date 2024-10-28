@@ -10,6 +10,7 @@ import { createLecture } from "../controllers/LectureController";
 import { uploadFile } from "../middlewares/mutlerUploadFile";
 import { createProposal } from "../controllers/ProposalController";
 import { getTeamMemberByUserID, storeTeamMember } from "../controllers/TeamMemberController";
+import { checkDataCompleate } from "../middlewares/checkDataCompleate";
 
 const router = Router();
 
@@ -40,8 +41,9 @@ router.post("/lecture", authenticateJWT, createLecture);
 router.post("/team", authenticateJWT, createTeam);
 router.post("/proposal", authenticateJWT, uploadFile.single("file_proposal"), createProposal);
 router.post("/team-member", authenticateJWT, uploadFile.single("file_ktm"), storeTeamMember);
-router.get("/team-member", getDataTeam);
-router.get("/team-member/:id", getTeamMemberByUserID);
+router.get("/all-team-member", authenticateJWT, getDataTeam);
+router.get("/team-member", authenticateJWT, getTeamMemberByUserID);
+router.get("/check-team-compleate", authenticateJWT, checkDataCompleate);
 
 router.get('/categories', authenticateJWT, getAllCategory);
 export default router;

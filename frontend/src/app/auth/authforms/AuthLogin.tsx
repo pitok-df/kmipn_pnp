@@ -30,12 +30,12 @@ const AuthLogin = () => {
       }, { withCredentials: true });
 
       if (response.data.success) {
-        const accessToken = response.data.data.accessToken;
-        localStorage.setItem("accessToken", accessToken);
-        setCookie("accessToken", accessToken);
-        const decoded: JwtPayload = jwtDecode(accessToken);
-        localStorage.setItem('user_name', decoded.user.name);
-        localStorage.setItem('idUser', decoded.user.id);
+        // const accessToken = response.data.data.accessToken;
+        // localStorage.setItem("accessToken", accessToken);
+        // setCookie("accessToken", accessToken);
+        // const decoded: JwtPayload = jwtDecode(accessToken);
+        // localStorage.setItem('user_name', decoded.user.name);
+        // localStorage.setItem('idUser', decoded.user.id);
         // redirect ke halaman dashboard
 
         window.location.href = "/dashboard";

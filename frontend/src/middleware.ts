@@ -9,13 +9,10 @@ interface userDecode {
 }
 
 export function middleware(request: NextRequest) {
-    const token = request.cookies.get('refreshToken');
+    const token = request.cookies.get('accessToken');
     const url = request.nextUrl.clone();
     const currentUrl = new URL(request.url);
     const path = currentUrl.pathname;
-
-    console.log(getCookie("accessToken"));
-
 
     // jika access token belum ada pada cookies
     if (!token) {
@@ -26,11 +23,10 @@ export function middleware(request: NextRequest) {
         const decodeJWT: userDecode = jwtDecode(token.value); // decode token
         const currentTime = Math.floor(Date.now() / 1000); // ini untuk mendapatkan waktu sekarang dalam mili detik
 
-        // Redirect ke halaman jika token sudah expired
+        // Redirect ke halaman login jika token sudah expired
         if (currentTime > decodeJWT.exp) {
             const response = NextResponse.redirect(new URL("/auth/login", request.url));
             response.cookies.delete("accessToken");
-            response.cookies.delete("refreshToken");
             return response;
         }
 
@@ -41,9 +37,9 @@ export function middleware(request: NextRequest) {
         }
 
         // redirect ke halaman unauthorized jika role user tidak sesaui
-        if (decodeJWT.user.role !== 'participant') {
-            return NextResponse.rewrite(new URL("/unauthorized", request.url));
-        }
+        // if (decodeJWT.user.role !== 'admin') {
+        //     return NextResponse.rewrite(new URL("/unauthorized", request.url));
+        // }
     }
 
     return NextResponse.next();

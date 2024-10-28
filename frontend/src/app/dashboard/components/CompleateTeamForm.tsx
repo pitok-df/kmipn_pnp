@@ -87,7 +87,7 @@ export default function CompleateTeamForm() {
             setKategori("")
             setProposal(null)
             setTeamMembers([...teamMembers])
-
+            window.location.href = "/dashboard/team"
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || "Failed to save team data."
             toast.error(errorMessage)
