@@ -10,6 +10,7 @@ export const storeTeamMember = async (req: Request, res: Response<ResponseApi>) 
         const fileName = `${process.env.BASEURl}/${type}/${req.file?.filename}`;
         const { teamId, userId, role, nim, name, email, no_WA, prodi } = req.body;
         const teamMember = await createTeamMember(Number(teamId), userId, role, nim, name, email, no_WA, prodi, fileName!);
+        res.cookie("teamDataCompleate", 'true', { httpOnly: true, secure: true, sameSite: "strict" });
         return res.status(201).json({ success: true, statusCode: 201, msg: "Successfully save team member.", data: teamMember })
     } catch (error) {
         if (error instanceof AppError) {
@@ -29,8 +30,15 @@ export const storeTeamMember = async (req: Request, res: Response<ResponseApi>) 
 
 export const getTeamMemberByUserID = async (req: Request, res: Response<ResponseApi>) => {
     try {
-        const user = userLogin(req);
-        console.log(user.id);
+        const user = await userLogin(req);
+        console.log(user?.teamMember);
+
+        if (!user?.teamMember) return res.status(400).json({
+            success: false,
+            statusCode: 400,
+            msg: "Complete team member before",
+        });
+
         const teamMember = await getTeamMemberByUserIDService(String(user.id));
         const dataMap = {
             teamName: teamMember.team.name,
@@ -41,6 +49,7 @@ export const getTeamMemberByUserID = async (req: Request, res: Response<Response
             linkProposal: teamMember.team.proposal?.fileLink,
             statusProposal: teamMember.team.proposal?.status || 'pending',
             statusSubmission: teamMember.team.submission?.status || 'pending',
+            round: teamMember.team.submission?.round || "pending",
             verified: teamMember.team.verified,
             teamMembers: teamMember.team.teamMembers.map((member) => ({
                 name: `${member.name} ${member.role === "leader" ? ' (Ketua)' : ''}`,

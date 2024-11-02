@@ -3,9 +3,11 @@ import { ResponseApi } from "../types/ApiType";
 import { AppError } from "../utils/AppError";
 import { createProposalService } from "../services/ProposalService";
 
-export const createProposal = async (req: Request, res: Response<ResponseApi>) => {
+export const createProposal = async (req: any, res: Response<ResponseApi>) => {
     try {
-        const { teamID } = req.body;
+        const teamID = req.user.user.teamMember.teamId;
+        console.log(req.file);
+
         const { type } = req.query;
         const fileLink = `${process.env.BASEURl}/${type}/${req.file?.filename}`;
         const proposal = await createProposalService(Number(teamID), String(fileLink));
@@ -18,6 +20,8 @@ export const createProposal = async (req: Request, res: Response<ResponseApi>) =
                 msg: error.message
             });
         }
+        console.log(error);
+
         return res.status(500).json({
             success: false,
             statusCode: 500,

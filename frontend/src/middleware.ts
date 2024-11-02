@@ -1,50 +1,69 @@
-import { getCookie, setCookie } from 'cookies-next';
 import { jwtDecode } from 'jwt-decode';
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-interface userDecode {
-    user: { role: string, teamMember: boolean },
+interface UserDecode {
+    user: { role: "participant" | "admin" | "jury", teamMember: boolean, verified: boolean },
     exp: number
 }
 
+// Fungsi untuk redirect ke halaman tertentu
+function redirectTo(urlPath: string, request: NextRequest) {
+    const redirectUrl = new URL(urlPath, request.url);
+    return NextResponse.redirect(redirectUrl);
+}
+
+// Fungsi untuk mengecek apakah token sudah expired
+function isTokenExpired(token: string): boolean {
+    const { exp }: UserDecode = jwtDecode(token);
+    const currentTime = Math.floor(Date.now() / 1000);
+    return currentTime > exp;
+}
+
 export function middleware(request: NextRequest) {
-    const token = request.cookies.get('accessToken');
-    const url = request.nextUrl.clone();
-    const currentUrl = new URL(request.url);
-    const path = currentUrl.pathname;
+    const token = request.cookies.get('accessToken')?.value;
+    const urlPath = request.nextUrl.pathname;
 
-    // jika access token belum ada pada cookies
+    // Jika token tidak ada, redirect ke login kalau mencoba akses halaman dashboard
     if (!token) {
-        // redirect ke halaman login
-        if (url.pathname !== "/auth/login") { url.pathname = "/auth/login"; return NextResponse.redirect(url); }
+        if (!urlPath.startsWith("/auth/login") && !urlPath.startsWith("/auth/register")) {
+            return redirectTo("/auth/login", request);
+        }
     } else {
-        if (request.nextUrl.pathname.startsWith("/auth/login")) return NextResponse.redirect(new URL("/dashboard", request.url));
-        const decodeJWT: userDecode = jwtDecode(token.value); // decode token
-        const currentTime = Math.floor(Date.now() / 1000); // ini untuk mendapatkan waktu sekarang dalam mili detik
+        // Jika user sudah login, redirect dari halaman login/register ke dashboard
+        if (urlPath.startsWith("/auth/login") || urlPath.startsWith("/auth/register")) {
+            return redirectTo("/dashboard", request);
+        }
 
-        // Redirect ke halaman login jika token sudah expired
-        if (currentTime > decodeJWT.exp) {
-            const response = NextResponse.redirect(new URL("/auth/login", request.url));
+        // Decode token dan cek role serta teamMember
+        if (!isTokenExpired(token)) {
+            const decodeJWT: UserDecode = jwtDecode(token);
+
+            // Jika role "participant", cek status teamMember
+            if (decodeJWT.user.role === "participant") {
+                const teamDataCompleate = request.cookies.get("teamDataCompleate")?.value === 'true';
+
+                // Kalau teamMember belum ada, redirect ke halaman lengkapi data team
+                if (!teamDataCompleate && !urlPath.startsWith("/dashboard/team/compleate")) {
+                    return redirectTo("/dashboard/team/compleate", request);
+                }
+
+                // Kalau teamMember sudah ada, pastikan tidak bisa akses halaman lengkapi data team
+                if (teamDataCompleate && urlPath.startsWith("/dashboard/team/compleate")) {
+                    return redirectTo("/dashboard/team", request);
+                }
+            }
+        } else {
+            // Hapus token kalau sudah expired dan redirect ke login
+            const response = redirectTo("/auth/login", request);
             response.cookies.delete("accessToken");
             return response;
         }
-
-        const userRole = {
-            admin: [],
-            participant: [],
-            juri: []
-        }
-
-        // redirect ke halaman unauthorized jika role user tidak sesaui
-        // if (decodeJWT.user.role !== 'admin') {
-        //     return NextResponse.rewrite(new URL("/unauthorized", request.url));
-        // }
     }
 
     return NextResponse.next();
 }
 
 export const config = {
-    matcher: ["/dashboard/:path*", "/auth/login"]
-}
+    matcher: ["/dashboard/:path*", "/auth/:path*"]
+};

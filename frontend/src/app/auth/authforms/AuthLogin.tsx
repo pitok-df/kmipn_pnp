@@ -4,8 +4,6 @@ import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
-import { setCookie } from 'cookies-next'
 
 interface JwtPayload {
   exp: number; // Waktu expire dalam format Unix (seconds)
@@ -30,15 +28,8 @@ const AuthLogin = () => {
       }, { withCredentials: true });
 
       if (response.data.success) {
-        // const accessToken = response.data.data.accessToken;
-        // localStorage.setItem("accessToken", accessToken);
-        // setCookie("accessToken", accessToken);
-        // const decoded: JwtPayload = jwtDecode(accessToken);
-        // localStorage.setItem('user_name', decoded.user.name);
-        // localStorage.setItem('idUser', decoded.user.id);
-        // redirect ke halaman dashboard
-
-        window.location.href = "/dashboard";
+        localStorage.setItem('idUser', response.data.data.user.id)
+        window.location.reload();
       } else {
         // Jika login gagal, tampilkan pesan error
         setErrorMsg(response.data.msg || "Login failed");
@@ -48,7 +39,7 @@ const AuthLogin = () => {
         console.log(errors)
         const error = errors.response.data;
         if (error.statusCode === 404) setErrorMsg("You not registered.");
-        if (error.statusCode === 401) setErrorMsg("Invalid credential.");
+        if (error.statusCode === 401) setErrorMsg("Email or password incorrect.");
         if (error.statusCode === 400) setErrorMsg(`${error.msg}`);
       } else {
         setErrorMsg("Failed.")

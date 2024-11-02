@@ -14,7 +14,14 @@ export const register = async (req: Request, res: Response) => {
         }
         const { email, name, password } = req.body;
         const user = await registerService(email, password, name);
-        return res.status(201).json({ success: false, statusCode: 201, msg: "User registered successfully, check your email for verify email.", data: user })
+        const accessToken = generateToken(user);
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            maxAge: 15 * 60 * 60 * 1000
+        });
+        return res.status(201).json({ success: true, statusCode: 201, msg: "User registered successfully, check your email for verify your email.", data: user })
     } catch (error) {
         if (error instanceof AppError) {
             return res.status(error.statusCode).json({
@@ -30,8 +37,10 @@ export const register = async (req: Request, res: Response) => {
 export const verifyEmail = async (req: Request, res: Response<ResponseApi>) => {
     try {
         const { token } = req.query
+        console.log(token);
         const cektoken = await verifyTokenService(String(token));
         if (!cektoken) throw new AppError("Something went wrong", 400);
+
         return res.status(200).json({ success: true, statusCode: 200, msg: "Email verified successfully" });
     } catch (error) {
         if (error instanceof AppError) {
@@ -54,23 +63,27 @@ export const login = async (req: Request, res: Response<ResponseApi>) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ success: false, statusCode: 400, msg: "Validation require", errors: errors.array() });
-
         }
 
         const userValid = await loginService(email, password);
         const accessToken = generateToken(userValid);
 
+        const decode = decodeJWT(accessToken);
+        if (decode.user.role === 'participant') {
+            decode.user.teamMember ? res.cookie("teamDataCompleate", true, { httpOnly: true, secure: true, sameSite: "strict" }) :
+                res.cookie("teamDataCompleate", false, { httpOnly: true, secure: true, sameSite: "strict" })
+        }
+
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: true,
             sameSite: 'strict',
             maxAge: 15 * 60 * 60 * 1000
         });
 
-        const user: any = verifyToken(accessToken);
         return res.status(200).json({
             success: true, statusCode: 200, msg: "Successfully logged in", data: {
-                user: user.user
+                user: userValid
             }
         });
     } catch (error) {

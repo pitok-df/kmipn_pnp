@@ -65,7 +65,7 @@ const SidebarLayout = () => {
                 </Sidebar.ItemGroup>
               </Sidebar.Items>
               <div className="block sm:hidden  px-4 mt-8 relative">
-                <p className="py-4 text-[16px] text-slate-900">Wellcome, <strong><NameUser /></strong>! </p>
+                <div className="py-4 inline text-[16px] text-slate-900">Wellcome, <strong><NameUser /></strong>! </div>
                 <LogoutButton />
               </div>
             </SimpleBar>

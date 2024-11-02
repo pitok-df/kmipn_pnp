@@ -1,16 +1,30 @@
 'use client'
 
+import { getUserLogin } from "@/services/authServices";
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 const NameUser = () => {
-    const [name, setName] = useState<string>("");
+    const [name, setName] = useState<string | null>(null);
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const userName = localStorage.getItem("user_name");
-            setName(userName || "Guest");
+        const getUserData = async () => {
+            try {
+                const response = await getUserLogin();
+                setName(response.user.name)
+            } catch (error) {
+                console.log(error);
+            }
         }
-    }, [])
-    return name ? name : "Loading...";
+        getUserData();
+    }, [name])
+    if (!name) {
+        return (<p className="w-[10rem] px-5 h-5 rounded-lg animate-pulse bg-gray-300"></p>)
+    }
+    return (
+        <p className="text-black mx-3">
+            {name}
+        </p>
+    );
 }
 
 export default NameUser;

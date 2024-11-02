@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { User } from '@prisma/client';
 import { AppError } from '../utils/AppError';
 import { Request } from 'express';
+import { db } from './database';
 
 const JWT_SECRET = process.env.JWT_SECRET || "123456";
 const ENCRYPTION_KEY = process.env.JWT_SECRET || "pitokganteng121203";
@@ -74,12 +75,15 @@ type userType = {
     email: string;
     password: string;
     verified: boolean;
+    teamMembers: []
 }
 
-export const userLogin = (req: Request) => {
+export const userLogin = async (req: Request) => {
     const token = req.cookies.accessToken;
     const decode = decodeJWT(token);
-    return decode.user as userType;
+    const user = await db.user.findUnique({ where: { id: decode.user.id }, include: { teamMember: true } })
+    console.log(user);
+    return user;
 }
 
 export const decodeJWT = (token: string) => {

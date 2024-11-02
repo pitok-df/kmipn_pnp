@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addUser, AllUser, DeleteUser, GetUserById } from "../controllers/Usercontroller";
+import { addUser, AllUser, DeleteUser, GetUserById, updateUser } from "../controllers/Usercontroller";
 import { login, logout, refreshToken, register, verifyEmail } from "../controllers/AuthController";
 import { authenticateJWT } from "../middlewares/tokenAuth";
 import { getAllCategory } from "../controllers/CategoryController";
@@ -11,6 +11,7 @@ import { uploadFile } from "../middlewares/mutlerUploadFile";
 import { createProposal } from "../controllers/ProposalController";
 import { getTeamMemberByUserID, storeTeamMember } from "../controllers/TeamMemberController";
 import { checkDataCompleate } from "../middlewares/checkDataCompleate";
+import { userLogin } from "../config/jwt";
 
 const router = Router();
 
@@ -23,13 +24,14 @@ router.get('/', authenticateJWT, (req, res) => {
         ip: req.ip,
         refreshToken: req.cookies.refreshToken,
         timeStamp: timeStamp,
-        apiVersion: "1.0.0",
+        apiVersion: "1.0.0"
     });
 });
 
 router.get('/users', authenticateJWT, AllUser);
 router.post('/users', authenticateJWT, addUser);
 router.get('/users/:id', authenticateJWT, GetUserById);
+router.put('/users/:id', authenticateJWT, updateUser);
 router.post('/register', register);
 router.post('/login', loginValidator(), login);
 router.delete('/users/:id', authenticateJWT, DeleteUser);
@@ -39,11 +41,18 @@ router.post('/logout', logout);
 
 router.post("/lecture", authenticateJWT, createLecture);
 router.post("/team", authenticateJWT, createTeam);
-router.post("/proposal", authenticateJWT, uploadFile.single("file_proposal"), createProposal);
-router.post("/team-member", authenticateJWT, uploadFile.single("file_ktm"), storeTeamMember);
+router.post("/upload-proposal", authenticateJWT, uploadFile.single("file_proposal"), createProposal);
+router.post("/team-member", authenticateJWT, uploadFile.single("file_ktm"), checkDataCompleate, storeTeamMember);
 router.get("/all-team-member", authenticateJWT, getDataTeam);
 router.get("/team-member", authenticateJWT, getTeamMemberByUserID);
-router.get("/check-team-compleate", authenticateJWT, checkDataCompleate);
+router.get("/check-team-compleate", authenticateJWT, checkDataCompleate, (req, res) => {
+    res.cookie("teamDataCompleate", false, { httpOnly: true, secure: true, sameSite: "strict" });
+    return res.json({ teamDataCompleate: false });
+});
 
-router.get('/categories', authenticateJWT, getAllCategory);
+router.get('/categories', getAllCategory);
+router.get('/user-login', authenticateJWT, async (req, res) => {
+    const user = await userLogin(req);
+    return res.status(200).json({ user })
+});
 export default router;

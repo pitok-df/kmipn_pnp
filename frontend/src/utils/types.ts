@@ -7,6 +7,7 @@ export interface teamMemberType {
     linkProposal: string,
     statusProposal: string,
     statusSubmission: string,
+    round: string,
     verified: boolean,
     teamMembers: [
         {

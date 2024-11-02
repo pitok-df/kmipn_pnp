@@ -7,16 +7,15 @@ import { toast, ToastContainer } from "react-toastify";
 import CategoryLomba from "./Category";
 import ListPerguruangTinggi from "./ListPT";
 import TeamMemberForm from "./TeamMemberForm";
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function CompleateTeamForm() {
-
     const [teamName, setTeamName] = useState('');
     const [kategori, setKategori] = useState('');
     const [asalPoliteknik, setAsalPoliteknik] = useState('');
     const [dosenPendaming, setDosenPendaming] = useState('');
     const [nipDosen, setNipDosen] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [proposal, setProposal] = useState<File | null>(null);
     const fileInputRef = useRef(null);
 
     const [teamMembers, setTeamMembers] = useState([
@@ -53,9 +52,6 @@ export default function CompleateTeamForm() {
 
             // ambil id team yang baru saja dibuat
             const idTeam = team.data.data.id;
-            console.log("save data proposal");
-            const proposalr = await apiClient.post(`${process.env.NEXT_PUBLIC_BASEURL_BACKEND}/proposal?type=proposal`,
-                { teamID: idTeam, file_proposal: proposal }, { headers: { "Content-Type": "multipart/form-data;application/json" } });
 
             teamMembers.forEach(async (item, index) => {
                 if (index === 0) {
@@ -85,9 +81,10 @@ export default function CompleateTeamForm() {
             setAsalPoliteknik("")
             setDosenPendaming("")
             setKategori("")
-            setProposal(null)
-            setTeamMembers([...teamMembers])
-            window.location.href = "/dashboard/team"
+            setTeamMembers([...teamMembers]);
+            setTimeout(() => {
+                window.location.reload()
+            }, 2000);
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || "Failed to save team data."
             toast.error(errorMessage)
@@ -100,7 +97,7 @@ export default function CompleateTeamForm() {
         <div>
             <>
                 <ToastContainer />
-                <div className="rounded-lg dark:shadow-dark-md shadow-md bg-white dark:bg-darkgray p-6 relative w-full break-words">
+                <div className="rounded-sm border border-l-warning border-l-4 dark:shadow-dark-md shadow-md bg-white dark:bg-darkgray p-6 relative w-full break-words">
                     <form onSubmit={handleSubmit}>
                         <h5 className="card-title">Data Team</h5>
                         <div className="mt-6">
@@ -166,20 +163,6 @@ export default function CompleateTeamForm() {
                                                 placeholder="888889978772138213"
                                                 required
                                                 className="form-control"
-                                            />
-                                        </div>
-                                        <div>
-                                            <div className="mb-2 block">
-                                                <Label htmlFor="proposal" value="Proposal" />
-                                            </div>
-                                            <FileInput
-                                                id="proposal"
-                                                required
-                                                ref={fileInputRef}
-                                                onChange={(e) => {
-                                                    const file = e.target.files?.[0];
-                                                    if (file) setProposal(file)
-                                                }}
                                             />
                                         </div>
                                     </div>

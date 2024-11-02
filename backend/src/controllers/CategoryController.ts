@@ -4,16 +4,19 @@ import { ResponseApi } from "../types/ApiType";
 
 export const getAllCategory = async (req: Request, res: Response<ResponseApi>) => {
     try {
-        const categori = await getAllDataCategory();
-        return res.status(200).json({
-            success: true,
-            statusCode: 200,
-            msg: "Successfully get data",
-            data: categori
-        })
+        res.setHeader('Content-Type', 'text/event-stream')
+        res.setHeader('Cache-Control', 'no-cache')
+        res.setHeader('Connection', 'keep-alive')
+        const sendData = async () => {
+            const categori = await getAllDataCategory();
+            return res.write(`data: ${JSON.stringify({ success: true, data: categori })}\n\n`)
+        };
+
+        const intervalId = setInterval(sendData, 5000)
+
+        req.on('close', () => { clearInterval(intervalId); res.end(); })
     } catch (error) {
-        res.status(500).json({
-            success: false, statusCode: 500, msg: "Internal server error"
-        });
+        res.write(`data: ${JSON.stringify({ success: false, msg: "Internal server error" })}\n\n`);
+        res.end();
     }
 }

@@ -15,11 +15,13 @@ export const checkDataCompleate = async (req: Request, res: Response, next: Next
         });
 
         if (user?.teamMember) {
-            return res.json({ teamDataCompleate: true })
+            res.cookie("teamDataCompleate", true, { httpOnly: true, secure: true, sameSite: "strict" });
+            return res.json({ teamDataCompleate: true });
+        } else {
+            res.cookie("teamDataCompleate", false, { httpOnly: true, secure: true, sameSite: "strict" });
         }
-        return res.json({ teamDataCompleate: false })
+        next()
     } catch (error) {
         console.log(error);
     }
-
 }

@@ -26,7 +26,8 @@
     "react-dom": "18",
     "react-toastify": "^10.0.6",
     "sharp": "0.32.6",
-    "simplebar-react": "3.2.5"
+    "simplebar-react": "3.2.5",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "@iconify/tailwind": "^1.1.3",

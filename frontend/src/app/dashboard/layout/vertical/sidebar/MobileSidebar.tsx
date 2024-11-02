@@ -53,7 +53,7 @@ const MobileSidebar = () => {
 
             </Sidebar.Items>
             <div className="block sm:hidden  px-4 mt-8 relative">
-              <p className="py-4 text-[16px] text-slate-900">Wellcome, <strong><NameUser /></strong>! </p>
+              <div className="py-4 flex text-[16px] text-slate-900">Wellcome, <NameUser /></div>
               <LogoutButton />
             </div>
           </SimpleBar>
