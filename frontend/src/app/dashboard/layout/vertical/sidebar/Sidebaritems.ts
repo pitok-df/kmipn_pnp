@@ -6,7 +6,7 @@ export interface ChildItem {
   item?: any;
   url?: any;
   color?: string;
-  hakAkses: string;
+  permission: string;
 }
 
 export interface MenuItem {
@@ -24,20 +24,20 @@ import { uniqueId } from "lodash";
 
 const SidebarContent: MenuItem[] = [
   {
-    heading: "Dashboards",
+    heading: "Menu",
     id: Number(uniqueId()),
     children: [
       {
         name: "Dashboard",
         icon: "solar:widget-add-line-duotone",
         id: uniqueId(),
-        hakAkses: 'admin',
+        permission: 'participant',
         url: "/dashboard",
       },
       {
         name: "Team",
         id: uniqueId(),
-        hakAkses: 'participant',
+        permission: 'participant',
         icon: "solar:users-group-rounded-bold-duotone",
         url: "/dashboard/team"
       }

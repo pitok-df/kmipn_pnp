@@ -11,17 +11,23 @@ import { Icon } from "@iconify/react";
 import Upgrade from "./Upgrade";
 import NameUser from "@/app/components/dashboard/NameUser";
 import LogoutButton from "../header/LogoutButton";
+import { getUserLogin } from "@/services/authServices";
 
 const SidebarLayout = () => {
-  const [userRole, setUserRole] = useState(null)
+  const [role, setRole] = useState(null)
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        const data = JSON.parse(storedUser);
-        setUserRole(data.role);
+    const fetchingUser = async () => {
+      try {
+        const user = await getUserLogin()
+        setRole(user.role)
+        console.log(user);
+
+      } catch (error) {
+        console.log("Something went wrong");
+        return (<div>gagal menampilkan menu</div>)
       }
     }
+    fetchingUser()
   }, []);
   return (
     <>
@@ -50,15 +56,16 @@ const SidebarLayout = () => {
                       />
 
                       {item.children?.map((child, index) => (
-                        <React.Fragment key={child.id && index}>
-                          {child.children ? (
-                            <div className="collpase-items">
-                              <NavCollapse item={child} />
-                            </div>
-                          ) : (
-                            <NavItems item={child} />
-                          )}
-                        </React.Fragment>
+                        child.permission === role ?
+                          <React.Fragment key={child.id && index}>
+                            {child.children ? (
+                              <div className="collpase-items">
+                                <NavCollapse item={child} />
+                              </div>
+                            ) : (
+                              <NavItems item={child} />
+                            )}
+                          </React.Fragment> : ''
                       ))}
                     </React.Fragment>
                   ))}

@@ -1,16 +1,19 @@
 "use client";
 
 import axios from 'axios';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function VerifyEmail() {
     const [token, setToken] = useState<string | null>(null);
     const [status, setStatus] = useState<string | null>(null);
+    const url = useSearchParams()
 
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const tokenParam = urlParams.get('token');
+        // const urlParams = new URLSearchParams(window.location.search);
+        const tokenParam = url.get('token');
         setToken(tokenParam);
+        console.log(url.get("token"));
     }, []);
 
     useEffect(() => {
@@ -25,6 +28,7 @@ export default function VerifyEmail() {
                     );
                     setStatus("Succesfully verify email")
                     setTimeout(() => {
+                        window.location.reload()
                     }, 2000);
                 } catch (error) {
                     setStatus("Failed verifing email, token invalid or expire.")
