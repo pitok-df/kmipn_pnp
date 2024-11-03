@@ -6,7 +6,7 @@
 @import './layouts/header.css';
 @import './theme/default-colors.css';
 @import './override/reboot.css';
-
+@import './datatables/style.css';
 
 @layer components {
   .container {

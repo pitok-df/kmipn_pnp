@@ -20,3 +20,11 @@ export interface teamMemberType {
         }
     ]
 }
+
+export type userType = {
+    id?: string,
+    name: string,
+    email: string,
+    verified: boolean,
+    role: string
+}

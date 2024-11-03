@@ -35,11 +35,25 @@ const SidebarContent: MenuItem[] = [
         url: "/dashboard",
       },
       {
+        name: "Dashboard",
+        icon: "solar:widget-add-line-duotone",
+        id: uniqueId(),
+        permission: 'admin',
+        url: "/dashboard/admin",
+      },
+      {
         name: "Team",
         id: uniqueId(),
         permission: 'participant',
         icon: "solar:users-group-rounded-bold-duotone",
         url: "/dashboard/team"
+      },
+      {
+        name: "Users",
+        id: uniqueId(),
+        permission: 'admin',
+        icon: "solar:users-group-rounded-bold-duotone",
+        url: "/dashboard/users"
       }
     ],
   }

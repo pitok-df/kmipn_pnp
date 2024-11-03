@@ -10,7 +10,7 @@ const NameUser = () => {
         const getUserData = async () => {
             try {
                 const response = await getUserLogin();
-                setName(response.user.name)
+                setName(response.name)
             } catch (error) {
                 console.log(error);
             }
@@ -18,7 +18,7 @@ const NameUser = () => {
         getUserData();
     }, [name])
     if (!name) {
-        return (<p className="w-[10rem] px-5 h-5 rounded-lg animate-pulse bg-gray-300"></p>)
+        return (<p className="w-[10rem] mx-3 h-5 rounded-lg animate-pulse bg-gray-300"></p>)
     }
     return (
         <p className="text-black mx-3">

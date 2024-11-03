@@ -3,7 +3,7 @@ import { AppError } from "../utils/AppError";
 import { RoleUser } from "@prisma/client";
 
 export const GetAllUser = async () => {
-    const users = await db.user.findMany();
+    const users = await db.user.findMany({ orderBy: { name: "asc" } });
     return users;
 }
 
@@ -26,15 +26,28 @@ export const Delete = async (id: string) => {
     return user;
 }
 
-export const editUSer = async (id: string, email: string, password: string, name: string, role: RoleUser) => {
+export const editUSer = async (id: string, email: string, password: string | null, name: string, role: RoleUser) => {
+    // mencari user berdasarkan email, jika email sudah tersedia lempar error
+    const userExists = await db.user.findUnique({ where: { email: email, NOT: { id: id } } });
+    if (userExists) throw new AppError("Email already exists", 400);
+
     const user = await db.user.findUnique({ where: { id: id } });
     // mencari user berdasarkan email, jika user tidak ada lempar error
     if (!user) throw new AppError("User not found", 404);
 
-    // update data user
-    const userUpdate = await db.user.update({
-        data: { email, password, name, role }, where: { id }
-    });
+    const lastPassword = user.password
+    let userUpdate = {}
+    if (password !== null) {
+        // update data user
+        userUpdate = await db.user.update({
+            data: { email, password, name, role }, where: { id }
+        });
+    } else {
+        // update data user
+        userUpdate = await db.user.update({
+            data: { email, password: lastPassword, name, role }, where: { id }
+        });
+    }
 
     // jika user gagal diupdate maka lempar error
     if (!userUpdate) throw new AppError("failed update data user", 400);
@@ -42,8 +55,10 @@ export const editUSer = async (id: string, email: string, password: string, name
 }
 
 export const addUserService = async (email: string, password: string, name: string, role: RoleUser) => {
+    const user = await db.user.findUnique({ where: { email: email } });
+    if (user) throw new AppError("Email already exists", 400);
     // menambahkan data user ke database
-    const newUser = await db.user.create({ data: { email, password, name, role } });
+    const newUser = await db.user.create({ data: { email, password, name, role, verified: true } });
     // jika gagal menambahan data lempar error
     if (!newUser) throw new AppError("Failed add new user", 400);
     // jika tidak ada error kembalikan data user yang baru dicreate

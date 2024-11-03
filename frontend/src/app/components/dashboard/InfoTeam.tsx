@@ -6,6 +6,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import UploadProposal from "./UploadProposal";
+import Loading from "@/app/dashboard/Loading";
 
 const fetcher = (url: string) => axios.get(url, { withCredentials: true }).then((res) => res.data.data);
 
@@ -20,6 +21,10 @@ export default function InformasiTeam() {
             router.push("/dashboard/team/compleate");
         }
         console.error(error);
+    }
+
+    if (!teamInfo) {
+        return (<Loading />)
     }
 
     return (

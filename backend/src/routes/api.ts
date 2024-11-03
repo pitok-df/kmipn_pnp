@@ -3,7 +3,6 @@ import { addUser, AllUser, DeleteUser, GetUserById, updateUser } from "../contro
 import { login, logout, refreshToken, register, verifyEmail } from "../controllers/AuthController";
 import { authenticateJWT } from "../middlewares/tokenAuth";
 import { getAllCategory } from "../controllers/CategoryController";
-import { isParticipant } from "../middlewares/permission";
 import { loginValidator } from "../validators/LoginValidator";
 import { createTeam, getDataTeam } from "../controllers/TeamController";
 import { createLecture } from "../controllers/LectureController";
@@ -12,6 +11,7 @@ import { createProposal } from "../controllers/ProposalController";
 import { getTeamMemberByUserID, storeTeamMember } from "../controllers/TeamMemberController";
 import { checkDataCompleate } from "../middlewares/checkDataCompleate";
 import { userLogin } from "../config/jwt";
+import { addUserValidator, updateUserValidator } from "../validators/userValidator";
 
 const router = Router();
 
@@ -29,9 +29,9 @@ router.get('/', authenticateJWT, (req, res) => {
 });
 
 router.get('/users', authenticateJWT, AllUser);
-router.post('/users', authenticateJWT, addUser);
+router.post('/users', authenticateJWT, addUserValidator, addUser);
 router.get('/users/:id', authenticateJWT, GetUserById);
-router.put('/users/:id', authenticateJWT, updateUser);
+router.put('/users/:id', authenticateJWT, updateUserValidator, updateUser);
 router.post('/register', register);
 router.post('/login', loginValidator(), login);
 router.delete('/users/:id', authenticateJWT, DeleteUser);

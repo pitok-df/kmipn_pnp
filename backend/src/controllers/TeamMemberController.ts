@@ -31,7 +31,6 @@ export const storeTeamMember = async (req: Request, res: Response<ResponseApi>) 
 export const getTeamMemberByUserID = async (req: Request, res: Response<ResponseApi>) => {
     try {
         const user = await userLogin(req);
-        console.log(user?.teamMember);
 
         if (!user?.teamMember) return res.status(400).json({
             success: false,

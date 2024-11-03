@@ -82,7 +82,6 @@ export const userLogin = async (req: Request) => {
     const token = req.cookies.accessToken;
     const decode = decodeJWT(token);
     const user = await db.user.findUnique({ where: { id: decode.user.id }, include: { teamMember: true } })
-    console.log(user);
     return user;
 }
 

@@ -4,6 +4,7 @@ import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import axios from "axios";
+import { getUserLogin } from "@/services/authServices";
 
 interface JwtPayload {
   exp: number; // Waktu expire dalam format Unix (seconds)
@@ -29,7 +30,14 @@ const AuthLogin = () => {
 
       if (response.data.success) {
         localStorage.setItem('idUser', response.data.data.user.id)
-        window.location.reload();
+        const authUser = await getUserLogin();
+        if (authUser.role === "admin") {
+          window.location.href = "/dashboard/admin";
+        } else if (authUser.role === "participant") {
+          window.location.href = "/dashboard";
+        } else {
+          window.location.reload()
+        }
       } else {
         // Jika login gagal, tampilkan pesan error
         setErrorMsg(response.data.msg || "Login failed");

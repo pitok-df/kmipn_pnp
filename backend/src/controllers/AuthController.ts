@@ -37,7 +37,6 @@ export const register = async (req: Request, res: Response) => {
 export const verifyEmail = async (req: Request, res: Response<ResponseApi>) => {
     try {
         const { token } = req.query
-        console.log(token);
         const cektoken = await verifyTokenService(String(token));
         if (!cektoken) throw new AppError("Something went wrong", 400);
 

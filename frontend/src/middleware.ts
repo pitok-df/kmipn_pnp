@@ -3,8 +3,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 interface UserDecode {
-    user: { role: "participant" | "admin" | "jury", teamMember: boolean, verified: boolean },
-    exp: number
+    user: { role: "participant" | "admin" | "jury"; teamMember: boolean; verified: boolean };
+    exp: number;
 }
 
 // Fungsi untuk redirect ke halaman tertentu
@@ -20,41 +20,60 @@ function isTokenExpired(token: string): boolean {
     return currentTime > exp;
 }
 
+// Daftar path yang diizinkan untuk setiap role
+const allowedPathsByRole: { [key: string]: string[] } = {
+    participant: [
+        "/dashboard/team",
+        "/dashboard",
+        "/dashboard/team/compleate",
+    ],
+    admin: [
+        "/dashboard/icons/solar",
+        "/dashboard/admin",
+        "/dashboard/admin/settings",
+        "/dashboard/users"
+    ],
+    jury: [
+        "/dashboard/jury",
+        "/dashboard/jury/review",
+        "/dashboard/jury/feedback"
+    ]
+};
+
 export function middleware(request: NextRequest) {
     const token = request.cookies.get('accessToken')?.value;
     const urlPath = request.nextUrl.pathname;
 
-    // Jika token tidak ada, redirect ke login kalau mencoba akses halaman dashboard
     if (!token) {
         if (!urlPath.startsWith("/auth/login") && !urlPath.startsWith("/auth/register")) {
             return redirectTo("/auth/login", request);
         }
     } else {
-        // Jika user sudah login, redirect dari halaman login/register ke dashboard
         if (urlPath.startsWith("/auth/login") || urlPath.startsWith("/auth/register")) {
             return redirectTo("/dashboard", request);
         }
 
-        // Decode token dan cek role serta teamMember
         if (!isTokenExpired(token)) {
             const decodeJWT: UserDecode = jwtDecode(token);
+            const userRole = decodeJWT.user.role;
+            const teamDataCompleate = request.cookies.get("teamDataCompleate")?.value === 'true';
 
-            // Jika role "participant", cek status teamMember
-            if (decodeJWT.user.role === "participant") {
-                const teamDataCompleate = request.cookies.get("teamDataCompleate")?.value === 'true';
-
-                // Kalau teamMember belum ada, redirect ke halaman lengkapi data team
+            if (userRole === "participant") {
                 if (!teamDataCompleate && !urlPath.startsWith("/dashboard/team/compleate")) {
                     return redirectTo("/dashboard/team/compleate", request);
                 }
-
-                // Kalau teamMember sudah ada, pastikan tidak bisa akses halaman lengkapi data team
                 if (teamDataCompleate && urlPath.startsWith("/dashboard/team/compleate")) {
                     return redirectTo("/dashboard/team", request);
                 }
             }
+
+            // Cek akses berdasarkan daftar izin di allowedPathsByRole
+            const allowedPaths = allowedPathsByRole[userRole] || [];
+            if (!allowedPaths.some((allowedPath) => urlPath.startsWith(allowedPath))) {
+                return redirectTo("/unauthorized", request);
+            }
+
         } else {
-            // Hapus token kalau sudah expired dan redirect ke login
             const response = redirectTo("/auth/login", request);
             response.cookies.delete("accessToken");
             return response;
@@ -65,5 +84,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/dashboard/:path*", "/auth/:path*", "/verify-email"]
+    matcher: ["/dashboard/:path*", "/auth/:path*", "/verify-email"],
 };

@@ -8,7 +8,6 @@ import NavCollapse from "./NavCollapse";
 import SimpleBar from "simplebar-react";
 import FullLogo from "../../shared/logo/FullLogo";
 import { Icon } from "@iconify/react";
-import Upgrade from "./Upgrade";
 import NameUser from "@/app/components/dashboard/NameUser";
 import LogoutButton from "../header/LogoutButton";
 import { getUserLogin } from "@/services/authServices";
@@ -20,8 +19,6 @@ const SidebarLayout = () => {
       try {
         const user = await getUserLogin()
         setRole(user.role)
-        console.log(user);
-
       } catch (error) {
         console.log("Something went wrong");
         return (<div>gagal menampilkan menu</div>)
@@ -29,6 +26,29 @@ const SidebarLayout = () => {
     }
     fetchingUser()
   }, []);
+
+  if (!role) return (
+    <>
+      <div className="xl:block hidden">
+        <div className="flex">
+          <Sidebar className="fixed menu-sidebar pt-6 bg-white dark:bg-darkgray z-[10]"
+            aria-label="Sidebar with multi-level dropdown example">
+            <div className="mb-7 px-4 brand-logo">
+              <FullLogo />
+            </div>
+            <div className="w-full flex flex-col">
+              <div className="w-[100px] mx-4 h-[20px] rounded-lg bg-gray-300 flex animate-pulse"></div>
+              <div className="w-[200px] mt-3 ml-5 h-[35px] rounded-lg bg-gray-300 animate-pulse"></div>
+              <div className="w-[200px] mt-3 ml-5 h-[35px] rounded-lg bg-gray-300 animate-pulse"></div>
+              <div className="w-[200px] mt-3 ml-5 h-[35px] rounded-lg bg-gray-300 animate-pulse"></div>
+              <div className="w-[200px] mt-3 ml-5 h-[35px] rounded-lg bg-gray-300 animate-pulse"></div>
+            </div>
+          </Sidebar>
+        </div>
+      </div>
+    </>
+  )
+
   return (
     <>
       <div className="xl:block hidden">

@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Sidebar } from "flowbite-react";
 import SidebarContent from "./Sidebaritems";
 import NavItems from "./NavItems";
@@ -9,8 +9,43 @@ import FullLogo from "../../shared/logo/FullLogo";
 import { Icon } from "@iconify/react";
 import NameUser from "@/app/components/dashboard/NameUser";
 import LogoutButton from "../header/LogoutButton";
+import { getUserLogin } from "@/services/authServices";
 const MobileSidebar = () => {
+  const [role, setRole] = useState(null)
+  useEffect(() => {
+    const fetchingUser = async () => {
+      try {
+        const user = await getUserLogin()
+        setRole(user.role)
+      } catch (error) {
+        console.log("Something went wrong");
+        return (<div>gagal menampilkan menu</div>)
+      }
+    }
+    fetchingUser()
+  }, []);
 
+  if (!role) return (
+    <>
+      <div className="xl:block hidden">
+        <div className="flex">
+          <Sidebar className="fixed menu-sidebar pt-6 bg-white dark:bg-darkgray z-[10]"
+            aria-label="Sidebar with multi-level dropdown example">
+            <div className="mb-7 px-4 brand-logo">
+              <FullLogo />
+            </div>
+            <div className="w-full flex flex-col">
+              <div className="w-[100px] mx-4 h-[20px] rounded-lg bg-gray-300 flex animate-pulse"></div>
+              <div className="w-[200px] mt-3 ml-5 h-[35px] rounded-lg bg-gray-300 animate-pulse"></div>
+              <div className="w-[200px] mt-3 ml-5 h-[35px] rounded-lg bg-gray-300 animate-pulse"></div>
+              <div className="w-[200px] mt-3 ml-5 h-[35px] rounded-lg bg-gray-300 animate-pulse"></div>
+              <div className="w-[200px] mt-3 ml-5 h-[35px] rounded-lg bg-gray-300 animate-pulse"></div>
+            </div>
+          </Sidebar>
+        </div>
+      </div>
+    </>
+  )
   return (
     <>
       <div className="flex">
@@ -37,15 +72,16 @@ const MobileSidebar = () => {
                     />
 
                     {item.children?.map((child, index) => (
-                      <React.Fragment key={child.id && index}>
-                        {child.children ? (
-                          <div className="collpase-items">
-                            <NavCollapse item={child} />
-                          </div>
-                        ) : (
-                          <NavItems item={child} />
-                        )}
-                      </React.Fragment>
+                      child.permission === role ?
+                        <React.Fragment key={child.id && index}>
+                          {child.children ? (
+                            <div className="collpase-items">
+                              <NavCollapse item={child} />
+                            </div>
+                          ) : (
+                            <NavItems item={child} />
+                          )}
+                        </React.Fragment> : ''
                     ))}
                   </React.Fragment>
                 ))}
