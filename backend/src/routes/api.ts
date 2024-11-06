@@ -2,7 +2,7 @@ import { Router } from "express";
 import { addUser, AllUser, DeleteUser, GetUserById, updateUser } from "../controllers/Usercontroller";
 import { login, logout, refreshToken, register, verifyEmail } from "../controllers/AuthController";
 import { authenticateJWT } from "../middlewares/tokenAuth";
-import { deleteCategory, getAllCategory, getAllCategoryClose, updateCategory } from "../controllers/CategoryController";
+import { createCategory, deleteCategory, getAllCategory, getAllCategoryClose, updateCategory } from "../controllers/CategoryController";
 import { loginValidator } from "../validators/LoginValidator";
 import { createTeam, getDataTeam } from "../controllers/TeamController";
 import { createLecture } from "../controllers/LectureController";
@@ -52,6 +52,7 @@ router.get("/check-team-compleate", authenticateJWT, checkDataCompleate, (req, r
 });
 
 router.get('/categories', getAllCategory);
+router.post('/categories', authenticateJWT, updateCategoriValidator, createCategory);
 router.get('/categories-close', authenticateJWT, getAllCategoryClose);
 router.put('/categories/:id', authenticateJWT, updateCategoriValidator, updateCategory);
 router.delete('/categories/:id', authenticateJWT, updateCategoriValidator, deleteCategory);

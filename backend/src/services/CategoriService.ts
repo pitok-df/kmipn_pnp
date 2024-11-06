@@ -20,3 +20,11 @@ export const deleteCategoryService = async (id: number) => {
     const deletedCategory = await db.category.delete({ where: { id: id } });
     return deletedCategory;
 }
+
+export const addCategoriService = async (categoriName: string, description: string) => {
+    const newCategory = await db.category.create({
+        data: { categoriName: categoriName, description: description }
+    });
+    if (!newCategory) throw new AppError("Fail saved category.", 400);
+    return newCategory
+}

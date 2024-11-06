@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { deleteCategoryService, getAllDataCategory, updateCategoryService } from "../services/CategoriService";
+import { addCategoriService, deleteCategoryService, getAllDataCategory, updateCategoryService } from "../services/CategoriService";
 import { ResponseApi } from "../types/ApiType";
 import { AppError } from "../utils/AppError";
 import { validationResult } from "express-validator";
@@ -46,8 +46,6 @@ export const updateCategory = async (req: Request, res: Response<ResponseApi>) =
         })
         const { id } = req.params
         const { categoriName, description } = req.body
-        console.log(description);
-
         const updatedCategory = await updateCategoryService(Number(id), categoriName, description);
         return res.status(200).json({ success: true, statusCode: 200, msg: "Successfully update category", data: updatedCategory })
     } catch (error) {
@@ -59,6 +57,34 @@ export const updateCategory = async (req: Request, res: Response<ResponseApi>) =
 
         return res.status(500).json({
             success: false, statusCode: 500, msg: "Internal server error", errors: error
+        })
+    }
+}
+
+export const createCategory = async (req: Request, res: Response<ResponseApi>) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ success: false, statusCode: 400, msg: "Successfully added category", errors: errors.array() })
+        }
+        const { categoriName, description } = req.body;
+        const newCategory = await addCategoriService(categoriName, description);
+        return res.status(200).json({ success: true, statusCode: 200, msg: "Successfully added category", data: newCategory })
+    } catch (error) {
+        if (error instanceof AppError) {
+            return res.status(error.statusCode).json({
+                success: false,
+                statusCode: error.statusCode,
+                msg: error.message,
+                errors: error
+            })
+        }
+
+        return res.status(500).json({
+            success: false,
+            statusCode: 500,
+            msg: "Internal server error."
         })
     }
 }
