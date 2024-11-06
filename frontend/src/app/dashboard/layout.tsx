@@ -2,6 +2,8 @@
 import React from "react";
 import Sidebar from "./layout/vertical/sidebar/Sidebar";
 import Header from "./layout/vertical/header/Header";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/ReactToastify.css'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,6 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Header />
           <div className={`container mx-auto py-30`}>
             {children}
+            <ToastContainer />
           </div>
         </div>
       </div>

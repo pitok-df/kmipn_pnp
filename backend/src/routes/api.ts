@@ -2,7 +2,7 @@ import { Router } from "express";
 import { addUser, AllUser, DeleteUser, GetUserById, updateUser } from "../controllers/Usercontroller";
 import { login, logout, refreshToken, register, verifyEmail } from "../controllers/AuthController";
 import { authenticateJWT } from "../middlewares/tokenAuth";
-import { getAllCategory } from "../controllers/CategoryController";
+import { deleteCategory, getAllCategory, getAllCategoryClose, updateCategory } from "../controllers/CategoryController";
 import { loginValidator } from "../validators/LoginValidator";
 import { createTeam, getDataTeam } from "../controllers/TeamController";
 import { createLecture } from "../controllers/LectureController";
@@ -12,6 +12,7 @@ import { getTeamMemberByUserID, storeTeamMember } from "../controllers/TeamMembe
 import { checkDataCompleate } from "../middlewares/checkDataCompleate";
 import { userLogin } from "../config/jwt";
 import { addUserValidator, updateUserValidator } from "../validators/userValidator";
+import { updateCategoriValidator } from "../validators/CategoriValidator";
 
 const router = Router();
 
@@ -32,9 +33,9 @@ router.get('/users', authenticateJWT, AllUser);
 router.post('/users', authenticateJWT, addUserValidator, addUser);
 router.get('/users/:id', authenticateJWT, GetUserById);
 router.put('/users/:id', authenticateJWT, updateUserValidator, updateUser);
+router.delete('/users/:id', authenticateJWT, DeleteUser);
 router.post('/register', register);
 router.post('/login', loginValidator(), login);
-router.delete('/users/:id', authenticateJWT, DeleteUser);
 router.post('/verify-email', verifyEmail);
 router.post('/refresh-token', refreshToken);
 router.post('/logout', logout);
@@ -51,6 +52,9 @@ router.get("/check-team-compleate", authenticateJWT, checkDataCompleate, (req, r
 });
 
 router.get('/categories', getAllCategory);
+router.get('/categories-close', authenticateJWT, getAllCategoryClose);
+router.put('/categories/:id', authenticateJWT, updateCategoriValidator, updateCategory);
+router.delete('/categories/:id', authenticateJWT, updateCategoriValidator, deleteCategory);
 router.get('/user-login', authenticateJWT, async (req, res) => {
     const user = await userLogin(req);
     return res.status(200).json({ user })

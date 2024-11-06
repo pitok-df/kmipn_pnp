@@ -59,9 +59,6 @@ export const registerService = async (email: string, password: string, name: str
 
 export const verifyTokenService = async (token: string) => {
     const usertToken = await findToken(token);
-
-    console.log(usertToken);
-
     // melakukan pengecekan apakah tokan valid
     if (!usertToken) throw new AppError("Invalid or expired token", 400);
     // melakukan pengecekan apakah token sudah expire atau belum

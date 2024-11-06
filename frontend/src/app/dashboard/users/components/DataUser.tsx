@@ -1,11 +1,9 @@
 'use client';
 
-import { faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Icon } from '@iconify/react/dist/iconify.js';
-import { Button, Select, TextInput } from 'flowbite-react';
-import { HTMLAttributes, useState } from 'react';
+import { Select, TextInput } from 'flowbite-react';
+import { useState } from 'react';
 import EditeUser from './EditUser';
+import DeleteUser from './DeleteUser';
 
 type User = {
     id: string;
@@ -79,6 +77,7 @@ export default function UserTable({ users, className }: { users: User[], classNa
                         <th className="px-4 py-2 border">Name</th>
                         <th className="px-4 py-2 border">Email</th>
                         <th className="px-4 py-2 border">Role</th>
+                        <th className="px-4 py-2 border">Varivied</th>
                         <th className="px-4 py-2 border">Action</th>
                     </tr>
                 </thead>
@@ -91,14 +90,14 @@ export default function UserTable({ users, className }: { users: User[], classNa
                             <td className="px-4 py-2 border">{user.name}</td>
                             <td className="px-4 py-2 border">{user.email}</td>
                             <td className="px-4 py-2 border">{user.role}</td>
+                            <td className="px-4 py-2 border">{user.verified ?
+                                <div className='bg-success text-white w-max px-2 text-sm rounded-lg font-bold'><small>Verified</small></div>
+                                :
+                                <div className='bg-error text-white w-max px-2 text-sm rounded-lg font-bold'><small>Unverified</small></div>
+                            }</td>
                             <td className="px-4 py-2 border flex gap-2">
-                                {/* <Button as={'button'} color={'warning'} size={'sm'}>
-                                    <FontAwesomeIcon icon={faPencil} />
-                                </Button> */}
                                 <EditeUser user={user} />
-                                <Button as={'button'} color={'error'} size={'sm'}>
-                                    <FontAwesomeIcon icon={faTrash} />
-                                </Button>
+                                <DeleteUser user={user} />
                             </td>
                         </tr>
                     ))}

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { AppError } from "../utils/AppError";
 import { ResponseApi } from "../types/ApiType";
 import { loginService, registerService, verifyTokenService } from "../services/AuthService";
-import { decodeJWT, generateRefreshToken, generateToken, refreshTokenJwt, verifyToken } from "../config/jwt";
+import { decodeJWT, generateRefreshToken, generateToken, refreshTokenJwt, userLogin, verifyToken } from "../config/jwt";
 import jwt from 'jsonwebtoken'
 import { validationResult } from "express-validator";
 
@@ -39,7 +39,14 @@ export const verifyEmail = async (req: Request, res: Response<ResponseApi>) => {
         const { token } = req.query
         const cektoken = await verifyTokenService(String(token));
         if (!cektoken) throw new AppError("Something went wrong", 400);
-
+        const user: any = await userLogin(req);
+        const accessToken = generateToken(user);
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            maxAge: 15 * 60 * 60 * 1000
+        });
         return res.status(200).json({ success: true, statusCode: 200, msg: "Email verified successfully" });
     } catch (error) {
         if (error instanceof AppError) {

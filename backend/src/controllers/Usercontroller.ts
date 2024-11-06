@@ -4,6 +4,7 @@ import { ResponseApi, User } from "../types/ApiType";
 import { AppError } from "../utils/AppError";
 import { hashPassword } from "../utils/HashPassword";
 import { validationResult } from "express-validator";
+import { userLogin } from "../config/jwt";
 
 export const AllUser = async (req: Request, res: Response<ResponseApi>, next: NextFunction) => {
     try {
@@ -31,6 +32,10 @@ export const GetUserById = async (req: Request, res: Response<ResponseApi>, next
 export const DeleteUser = async (req: Request, res: Response<ResponseApi>) => {
     try {
         const { id } = req.params;
+        const userIdLogin = await userLogin(req);
+        if (id === userIdLogin?.id) {
+            throw new AppError("Can't delete your own account.", 400);
+        }
         const user = await Delete(id);
         return res.status(200).json({ success: true, statusCode: 200, msg: "Successfully delete user " + user.name })
     } catch (error) {

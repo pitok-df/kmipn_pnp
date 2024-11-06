@@ -31,7 +31,8 @@ const allowedPathsByRole: { [key: string]: string[] } = {
         "/dashboard/icons/solar",
         "/dashboard/admin",
         "/dashboard/admin/settings",
-        "/dashboard/users"
+        "/dashboard/users",
+        "/dashboard/categories",
     ],
     jury: [
         "/dashboard/jury",
@@ -58,19 +59,36 @@ export function middleware(request: NextRequest) {
             const userRole = decodeJWT.user.role;
             const teamDataCompleate = request.cookies.get("teamDataCompleate")?.value === 'true';
 
-            if (userRole === "participant") {
-                if (!teamDataCompleate && !urlPath.startsWith("/dashboard/team/compleate")) {
-                    return redirectTo("/dashboard/team/compleate", request);
-                }
-                if (teamDataCompleate && urlPath.startsWith("/dashboard/team/compleate")) {
-                    return redirectTo("/dashboard/team", request);
+            // if (!decodeJWT.user.verified && !urlPath.startsWith('/auth/verify-email')) {
+            //     console.log(!decodeJWT.user.verified && !urlPath.startsWith('/auth/verify-email'));
+            //     if (!request.headers.get("X-Redirected")) {
+            //         const response = redirectTo("/auth/verify-email", request);
+            //         response.headers.set("X-Redirected", 'true');
+            //         return response;
+            //     }
+            // }
+
+            if (!decodeJWT.user.verified) {
+                if (!urlPath.startsWith("/auth/verify-email")) {
+                    return redirectTo("/auth/verify-email", request);
                 }
             }
+            else {
 
-            // Cek akses berdasarkan daftar izin di allowedPathsByRole
-            const allowedPaths = allowedPathsByRole[userRole] || [];
-            if (!allowedPaths.some((allowedPath) => urlPath.startsWith(allowedPath))) {
-                return redirectTo("/unauthorized", request);
+                if (userRole === "participant") {
+                    if (!teamDataCompleate && !urlPath.startsWith("/dashboard/team/compleate")) {
+                        return redirectTo("/dashboard/team/compleate", request);
+                    }
+                    if (teamDataCompleate && urlPath.startsWith("/dashboard/team/compleate")) {
+                        return redirectTo("/dashboard/team", request);
+                    }
+                }
+
+                // Cek akses berdasarkan daftar izin di allowedPathsByRole
+                const allowedPaths = allowedPathsByRole[userRole] || [];
+                if (!allowedPaths.some((allowedPath) => urlPath.startsWith(allowedPath))) {
+                    return redirectTo("/unauthorized", request);
+                }
             }
 
         } else {
@@ -84,5 +102,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/dashboard/:path*", "/auth/:path*", "/verify-email"],
+    matcher: ["/dashboard/:path*", "/auth/:path*"],
 };

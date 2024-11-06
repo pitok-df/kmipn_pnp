@@ -1,15 +1,13 @@
 'use client'
 
 import AlertError from "@/app/components/AlertError";
-import { Icon } from "@iconify/react/dist/iconify.js";
 import axios from "axios";
 import { Button, Label, Modal, Select, TextInput } from "flowbite-react";
-import { fromPairs, isArray } from "lodash";
+import { isArray } from "lodash";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import 'react-toastify/ReactToastify.css';
+import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 

@@ -28,7 +28,7 @@ export default function VerifyEmail() {
                     );
                     setStatus("Succesfully verify email")
                     setTimeout(() => {
-                        window.location.reload()
+                        window.location.href = "/auth/login"
                     }, 2000);
                 } catch (error) {
                     setStatus("Failed verifing email, token invalid or expire.")

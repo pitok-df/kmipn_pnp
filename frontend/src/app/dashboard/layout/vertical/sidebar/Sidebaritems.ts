@@ -54,6 +54,13 @@ const SidebarContent: MenuItem[] = [
         permission: 'admin',
         icon: "solar:users-group-rounded-bold-duotone",
         url: "/dashboard/users"
+      },
+      {
+        name: "Categories",
+        id: uniqueId(),
+        permission: 'admin',
+        icon: "solar:users-group-rounded-bold-duotone",
+        url: "/dashboard/categories"
       }
     ],
   }

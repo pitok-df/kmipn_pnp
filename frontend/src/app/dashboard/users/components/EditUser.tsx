@@ -7,8 +7,7 @@ import { isArray, uniqueId } from "lodash";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import 'react-toastify/ReactToastify.css';
+import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { userType } from "@/utils/types";

@@ -6,10 +6,11 @@ import axios from "axios";
 export default function CategoryLomba() {
     const [categories, setCategori] = useState([])
 
+    console.log("test");
     useEffect(() => {
         try {
             const fetchCategories = async () => {
-                const categori = await axios.get('/api/v1/categories', { withCredentials: true });
+                const categori = await axios.get('/api/v1/categories-close', { withCredentials: true });
                 setCategori(categori.data.data)
             }
             fetchCategories();

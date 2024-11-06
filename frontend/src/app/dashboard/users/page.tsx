@@ -1,17 +1,11 @@
-import { cookies } from "next/headers";
 import AddUser from "./components/AddUser";
 import UserTable from "./components/DataUser";
 import { api } from "@/utils/api";
-import { ToastContainer } from "react-toastify";
 
 const fetchUser = async () => {
-    // const cookieStore = cookies(); // Ambil cookies dari Next.js
-    // const userToken = cookieStore.get("accessToken"); // g
     const res = await api.get('/users')
     return res.data.data;
 }
-
-
 
 export default async function AdminUserPage() {
     const users = await fetchUser()
@@ -23,7 +17,6 @@ export default async function AdminUserPage() {
                     <AddUser />
                 </div>
                 <UserTable users={users} className={`p-2`} />
-                <ToastContainer />
             </div>
         </>
     );
