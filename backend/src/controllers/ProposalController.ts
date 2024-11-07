@@ -2,10 +2,13 @@ import { Request, Response } from "express";
 import { ResponseApi } from "../types/ApiType";
 import { AppError } from "../utils/AppError";
 import { createProposalService } from "../services/ProposalService";
+import { userLogin } from "../config/jwt";
 
 export const createProposal = async (req: any, res: Response<ResponseApi>) => {
     try {
-        const teamID = req.user.user.teamMember.teamId;
+        const user = await userLogin(req);
+        const teamID = user?.teamMember?.teamId;
+
         const { type } = req.query;
         const fileLink = `${process.env.BASEURl}/${type}/${req.file?.filename}`;
         const proposal = await createProposalService(Number(teamID), String(fileLink));

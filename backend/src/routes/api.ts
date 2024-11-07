@@ -37,7 +37,7 @@ router.delete('/users/:id', authenticateJWT, DeleteUser);
 router.post('/register', register);
 router.post('/login', loginValidator(), login);
 router.post('/verify-email', verifyEmail);
-router.post('/refresh-token', refreshToken);
+// router.post('/refresh-token', refreshToken);
 router.post('/logout', logout);
 
 router.post("/lecture", authenticateJWT, createLecture);
@@ -50,6 +50,8 @@ router.get("/check-team-compleate", authenticateJWT, checkDataCompleate, (req, r
     res.cookie("teamDataCompleate", false, { httpOnly: true, secure: true, sameSite: "strict" });
     return res.json({ teamDataCompleate: false });
 });
+
+// router.post('/compleate-team', authenticateJWT);
 
 router.get('/categories', getAllCategory);
 router.post('/categories', authenticateJWT, updateCategoriValidator, createCategory);

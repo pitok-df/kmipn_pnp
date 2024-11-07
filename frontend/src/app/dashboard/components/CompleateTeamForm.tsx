@@ -59,6 +59,8 @@ export default function CompleateTeamForm() {
                         teamId: idTeam, userId: localStorage.getItem("idUser"), role: "leader", nim: item.nim, email: item.email,
                         no_WA: item.no_wa, prodi: item.prodi, file_ktm: item.foto_ktm, name: item.nama_anggota
                     }, { headers: { "Content-Type": "multipart/form-data;application/json" } });
+                    console.log(createTeamMember.data.data);
+
                     if (!createTeamMember) { return };
                 } else {
                     const createTeamMember = await apiClient.post(`${process.env.NEXT_PUBLIC_BASEURL_BACKEND}/team-member?type=ktm`, {

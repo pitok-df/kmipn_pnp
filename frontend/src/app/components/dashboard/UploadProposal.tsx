@@ -32,6 +32,8 @@ export default function UploadProposal() {
             }
             setIsLoading(false)
         } catch (error) {
+            console.log(error);
+
             toast.info("failed upload proposal")
         }
     }

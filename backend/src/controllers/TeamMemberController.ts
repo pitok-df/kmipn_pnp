@@ -9,8 +9,10 @@ export const storeTeamMember = async (req: Request, res: Response<ResponseApi>) 
         const { type } = req.query;
         const fileName = `${process.env.BASEURl}/${type}/${req.file?.filename}`;
         const { teamId, userId, role, nim, name, email, no_WA, prodi } = req.body;
+        console.log(userId);
+
         const teamMember = await createTeamMember(Number(teamId), userId, role, nim, name, email, no_WA, prodi, fileName!);
-        res.cookie("teamDataCompleate", 'true', { httpOnly: true, secure: true, sameSite: "strict" });
+        res.cookie("teamDataCompleate", true, { httpOnly: true, secure: true, sameSite: "strict" });
         return res.status(201).json({ success: true, statusCode: 201, msg: "Successfully save team member.", data: teamMember })
     } catch (error) {
         if (error instanceof AppError) {
@@ -79,4 +81,8 @@ export const getTeamMemberByUserID = async (req: Request, res: Response<Response
             msg: "Internal server error: " + error
         });
     }
+}
+
+export const completeTeam = async (req: Request, res: Response<ResponseApi>) => {
+
 }
