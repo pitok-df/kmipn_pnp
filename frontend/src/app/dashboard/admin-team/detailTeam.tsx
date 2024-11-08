@@ -46,6 +46,14 @@ export default function DetailTeam({ data }: { data: AllTeamDataType }) {
                     Detail Team - {data.verified ? 'Sudah diverifikasi' : 'Belum diverifikasi'}
                 </Modal.Header>
                 <ModalBody>
+                    {/* <div className="mb-4">
+                        <h3 className="text-lg font-medium text-gray-700 mb-2">Informasi Tim</h3>
+                        <p className="text-sm text-gray-600"><span className="font-semibold">Nama Team:</span> {data.teamName}</p>
+                        <p className="text-sm text-gray-600"><span className="font-semibold">Kategori:</span> {data.categori}</p>
+                        <p className="text-sm text-gray-600"><span className="font-semibold">Politeknik:</span> {data.institution}</p>
+                        <p className="text-sm text-gray-600"><span className="font-semibold">Nama Dosen:</span> {data.lectureName}</p>
+                        <p className="text-sm text-gray-600"><span className="font-semibold">Proposal:</span> <a href={data.linkProposal} className="text-blue-500 underline">Lihat Proposal</a></p>
+                    </div> */}
                     <table className="mb-5 grid">
                         <thead>
                             <tr>
@@ -63,6 +71,10 @@ export default function DetailTeam({ data }: { data: AllTeamDataType }) {
                             <tr>
                                 <td><p className="text-gray-800 text-[.98rem] font-bold me-3">Nama Dosen</p></td>
                                 <td><p className="text-gray-600 text-[.98rem] font-medium">: {`${data.lectureName} (${data.lectureNip})`} </p></td>
+                            </tr>
+                            <tr>
+                                <td><p className="text-gray-800 text-[.98rem] font-bold me-3">Proposal</p></td>
+                                <td><p className="text-gray-600 text-[.98rem] font-medium">: {data.linkProposal ? <Link className="text-blue-500" target="_blank" href={data.linkProposal}>Lihat Proposal</Link> : "Belum upload"} </p></td>
                             </tr>
                         </thead>
                     </table>
@@ -123,7 +135,7 @@ export default function DetailTeam({ data }: { data: AllTeamDataType }) {
                         <button type="button" onClick={verifyTeam} className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-700 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
                             Verify
                         </button>
-                        <button onClick={handleModalConfirm} type="button" className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">No, cancel</button>
+                        <button onClick={handleModalConfirm} type="button" className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Cancel</button>
                     </div>
                 </Modal.Body>
             </Modal>
