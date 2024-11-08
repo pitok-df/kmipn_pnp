@@ -8,7 +8,7 @@ import { createTeam, getDataTeam } from "../controllers/TeamController";
 import { createLecture } from "../controllers/LectureController";
 import { uploadFile } from "../middlewares/mutlerUploadFile";
 import { createProposal } from "../controllers/ProposalController";
-import { getTeamMemberByUserID, storeTeamMember } from "../controllers/TeamMemberController";
+import { getTeamMemberByUserID, storeTeamMember, verifyTeam } from "../controllers/TeamMemberController";
 import { checkDataCompleate } from "../middlewares/checkDataCompleate";
 import { userLogin } from "../config/jwt";
 import { addUserValidator, updateUserValidator } from "../validators/userValidator";
@@ -37,21 +37,20 @@ router.delete('/users/:id', authenticateJWT, DeleteUser);
 router.post('/register', register);
 router.post('/login', loginValidator(), login);
 router.post('/verify-email', verifyEmail);
-// router.post('/refresh-token', refreshToken);
 router.post('/logout', logout);
 
 router.post("/lecture", authenticateJWT, createLecture);
 router.post("/team", authenticateJWT, createTeam);
 router.post("/upload-proposal", authenticateJWT, uploadFile.single("file_proposal"), createProposal);
-router.post("/team-member", authenticateJWT, uploadFile.single("file_ktm"), checkDataCompleate, storeTeamMember);
+router.post("/team-member", authenticateJWT, uploadFile.single("file_ktm"), storeTeamMember);
 router.get("/all-team-member", authenticateJWT, getDataTeam);
 router.get("/team-member", authenticateJWT, getTeamMemberByUserID);
+router.put("/team-member/:teamID", authenticateJWT, verifyTeam);
 router.get("/check-team-compleate", authenticateJWT, checkDataCompleate, (req, res) => {
     res.cookie("teamDataCompleate", false, { httpOnly: true, secure: true, sameSite: "strict" });
     return res.json({ teamDataCompleate: false });
 });
 
-// router.post('/compleate-team', authenticateJWT);
 
 router.get('/categories', getAllCategory);
 router.post('/categories', authenticateJWT, updateCategoriValidator, createCategory);

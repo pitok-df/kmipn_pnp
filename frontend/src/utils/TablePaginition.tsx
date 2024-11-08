@@ -1,9 +1,11 @@
 'use client';
 
-import { faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle, faPencil, faTrash, faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Select, TextInput } from 'flowbite-react';
+import { link } from 'fs/promises';
 import { uniqueId } from 'lodash';
+import Link from 'next/link';
 import { useState } from 'react';
 
 type TableProps<T> = {
@@ -13,10 +15,11 @@ type TableProps<T> = {
     className?: string;
     perPages?: number;
     onEdit?: (item: any) => void;
+    onDetail?: (item: any) => void;
     onDelete?: any;
 };
 
-export default function Table<T>({ data, headers, columns, className, perPages = 10, onEdit, onDelete }: TableProps<T>) {
+export default function Table<T>({ data, headers, columns, className, perPages = 10, onEdit, onDelete, onDetail }: TableProps<T>) {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(perPages);
@@ -80,7 +83,7 @@ export default function Table<T>({ data, headers, columns, className, perPages =
                                 {header.toString().toUpperCase()}
                             </th>
                         ))}
-                        {(onEdit || onDelete) && <th className="px-4 py-2 border">Actions</th>}
+                        {(onEdit || onDelete || onDetail) && <th className="px-4 py-2 border">Actions</th>}
                     </tr>
                 </thead>
                 <tbody>
@@ -97,7 +100,7 @@ export default function Table<T>({ data, headers, columns, className, perPages =
                                         {String(item[column] ?? '~')}
                                     </td>
                                 ))}
-                                {(onEdit || onDelete) && (
+                                {(onEdit || onDelete || onDetail) && (
                                     <td className="px-4 py-2 border flex gap-3">
                                         {onEdit && <Button color={'warning'} size={'sm'} onClick={() => onEdit(item)} className="border text-white bg-warning hover:bg-warning w-max outline-none focus:outline-none">
                                             <FontAwesomeIcon icon={faPencil} size="1x" color="white" />
@@ -105,6 +108,11 @@ export default function Table<T>({ data, headers, columns, className, perPages =
                                         {onDelete &&
                                             <Button as={'button'} onClick={() => onDelete(item)} color={'error'} size={'sm'}>
                                                 <FontAwesomeIcon icon={faTrash} />
+                                            </Button>
+                                        }
+                                        {onDetail &&
+                                            <Button as={Link} href='#' onClick={() => onDetail(item)} color={'success'} size={'sm'}>
+                                                <FontAwesomeIcon icon={faInfoCircle} />
                                             </Button>
                                         }
                                     </td>

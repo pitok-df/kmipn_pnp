@@ -28,11 +28,12 @@ const allowedPathsByRole: { [key: string]: string[] } = {
         "/dashboard/team/compleate",
     ],
     admin: [
-        "/dashboard/icons/solar",
         "/dashboard/admin",
         "/dashboard/admin/settings",
         "/dashboard/users",
         "/dashboard/categories",
+        "/dashboard/icons/solar",
+        "/dashboard/admin-team",
     ],
     jury: [
         "/dashboard/jury",

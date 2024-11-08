@@ -22,15 +22,17 @@ export const createTeamService = async (
 
 export const getDataTeamService = async () => {
     const dataTeam = await db.team.findMany({
-        include: { teamMembers: true, lecture: true, proposal: true, teamCategory: true, submission: true }
+        include: { teamMembers: true, lecture: true, proposal: true, teamCategory: true, submission: true }, orderBy: { verified: "asc" }
     });
 
     const dataMap = dataTeam.map((item) => ({
+        id: item.id,
         teamName: item.name,
         categori: item.teamCategory.categoriName,
         institution: item.institution,
         lectureName: item.lecture.name,
         lectureNip: item.lecture.nip,
+        verified: item.verified,
         teamMembers: item.teamMembers.map((member) => ({
             name: member.name + (member.role === 'leader' ? " (ketua)" : ''),
             nim: member.nim,
@@ -46,4 +48,15 @@ export const getDataTeamService = async () => {
 
     if (!dataTeam) throw new AppError("Failed get team data.", 400);
     return dataMap;
+}
+
+export const verifyTeamService = async (teamID: number) => {
+    const verifiedTeam = await db.team.update({
+        where: {
+            id: teamID
+        }, data: { verified: true }
+    });
+
+    if (!verifiedTeam) throw new AppError("Failed verified team", 400);
+    return verifiedTeam;
 }

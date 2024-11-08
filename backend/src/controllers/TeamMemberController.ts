@@ -3,6 +3,7 @@ import { createTeamMember, getTeamMemberByUserIDService } from "../services/Team
 import { AppError } from "../utils/AppError";
 import { ResponseApi } from "../types/ApiType";
 import { userLogin } from "../config/jwt";
+import { verifyTeamService } from "../services/TeamService";
 
 export const storeTeamMember = async (req: Request, res: Response<ResponseApi>) => {
     try {
@@ -67,6 +68,27 @@ export const getTeamMemberByUserID = async (req: Request, res: Response<Response
             msg: "Successfully get team member",
             data: dataMap
         });
+    } catch (error) {
+        if (error instanceof AppError) {
+            return res.status(error.statusCode).json({
+                success: false,
+                statusCode: error.statusCode,
+                msg: error.message
+            });
+        }
+        return res.status(500).json({
+            success: false,
+            statusCode: 500,
+            msg: "Internal server error: " + error
+        });
+    }
+}
+
+export const verifyTeam = async (req: Request, res: Response<ResponseApi>) => {
+    try {
+        const { teamID } = req.params
+        const verifyTeam = await verifyTeamService(Number(teamID));
+        return res.status(200).json({ success: true, statusCode: 200, msg: "Successfully verify team.", data: verifyTeam })
     } catch (error) {
         if (error instanceof AppError) {
             return res.status(error.statusCode).json({

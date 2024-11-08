@@ -49,19 +49,26 @@ const SidebarContent: MenuItem[] = [
         url: "/dashboard/team"
       },
       {
+        name: "Categories",
+        id: uniqueId(),
+        permission: 'admin',
+        icon: "solar:checklist-bold",
+        url: "/dashboard/categories"
+      },
+      {
+        name: "All Team",
+        id: uniqueId(),
+        permission: 'admin',
+        icon: "solar:users-group-rounded-bold-duotone",
+        url: "/dashboard/admin-team"
+      },
+      {
         name: "Users",
         id: uniqueId(),
         permission: 'admin',
         icon: "solar:users-group-rounded-bold-duotone",
         url: "/dashboard/users"
       },
-      {
-        name: "Categories",
-        id: uniqueId(),
-        permission: 'admin',
-        icon: "solar:users-group-rounded-bold-duotone",
-        url: "/dashboard/categories"
-      }
     ],
   }
 ];

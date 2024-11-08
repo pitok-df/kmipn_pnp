@@ -1,30 +1,29 @@
 import RefreshRouter from "@/app/components/atoms/reFetching";
-import AddUser from "./components/AddUser";
-import UserTable from "./components/DataUser";
 import { api } from "@/utils/api";
+import AllTeamTables from "./dataTeam";
 
-const fetchUser = async () => {
-    const res = await api.get('/users')
-    return res.data.data;
+const fetchAllTeam = async () => {
+    const response = await api.get('/all-team-member');
+    return response.data.data;
 }
 
 export const metadata = {
-    title: 'Users',
+    title: 'All Team Data',
 };
 
-export default async function AdminUserPage() {
-    const users = await fetchUser()
+export default async function TeamPage() {
+    const allTeamData = await fetchAllTeam();
     return (
         <>
             <div className="rounded-lg dark:shadow-dark-md shadow-md bg-white dark:bg-darkgray p-6 relative w-full break-words">
-                <h5 className="card-title mb-3">Data Users</h5>
+                <h5 className="card-title mb-3">Data Teams</h5>
                 <div className="flex justify-end mb-3">
                     <div className="gap-3 flex">
-                        <AddUser />
                         <RefreshRouter />
                     </div>
                 </div>
-                <UserTable users={users} className={`p-2`} />
+                <AllTeamTables data={allTeamData} />
+                {/* <AllTeamTable data={allTeamData} /> */}
             </div>
         </>
     );
