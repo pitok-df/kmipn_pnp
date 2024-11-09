@@ -1,12 +1,12 @@
 'use client'
 
-import { faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faGroupArrowsRotate, faPeopleGroup, faUserGroup, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function CountTeam({ team }: { team: [] }) {
     const countStatus = team.reduce(
         (acc: any, team: any) => {
-            if (team.statusSubmission) {
+            if (team.verified) {
                 acc.verified += 1
             } else {
                 acc.unverified += 1
@@ -26,7 +26,7 @@ export default function CountTeam({ team }: { team: [] }) {
                 </div>
                 <div className="flex justify-center align-middle">
                     <FontAwesomeIcon
-                        icon={faUsers}
+                        icon={faPeopleGroup}
                         className="font-bold text-5xl block mx-auto text-gray-500 leading-6 dark:text-opacity-60 hide-icon"
                     />
                 </div>
