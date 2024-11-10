@@ -34,11 +34,12 @@ export const getDataTeamService = async () => {
         lectureNip: item.lecture.nip,
         verified: item.verified,
         teamMembers: item.teamMembers.map((member) => ({
-            name: member.name + (member.role === 'leader' ? " (ketua)" : ''),
+            name: member.name,
             nim: member.nim,
             email: member.email,
             noWA: member.no_WA,
             prodi: member.prodi,
+            role: member.role,
             fileKTM: member.fileKTM
         })),
         linkProposal: item.proposal?.fileLink,
