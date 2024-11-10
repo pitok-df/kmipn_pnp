@@ -2,9 +2,16 @@ import RefreshRouter from "@/app/components/atoms/reFetching";
 import AddUser from "./components/AddUser";
 import UserTable from "./components/DataUser";
 import { api } from "@/utils/api";
+import { cookies } from "next/headers";
 
 const fetchUser = async () => {
-    const res = await api.get('/users')
+    const accessToken = cookies().get("accessToken")?.value;
+    const res = await api.get('/users', {
+        withCredentials: true,
+        headers: {
+            "Authorization": `Bearer ${accessToken}`
+        }
+    })
     return res.data.data;
 }
 

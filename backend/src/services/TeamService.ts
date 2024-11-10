@@ -22,7 +22,7 @@ export const createTeamService = async (
 
 export const getDataTeamService = async () => {
     const dataTeam = await db.team.findMany({
-        include: { teamMembers: true, lecture: true, proposal: true, teamCategory: true, submission: true }, orderBy: { verified: "asc" }
+        include: { teamMembers: { orderBy: { role: "asc" } }, lecture: true, proposal: true, teamCategory: true, submission: true }, orderBy: { verified: "asc" }
     });
 
     const dataMap = dataTeam.map((item) => ({

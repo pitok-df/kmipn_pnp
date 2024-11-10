@@ -19,7 +19,7 @@ export const createTeamMember = async (teamId: number, userId: string,
 export const getTeamMemberByUserIDService = async (userID: string) => {
     const teamMemberByUser = await db.teamMember.findUnique({
         where: { userId: userID }, include: {
-            team: { include: { lecture: true, proposal: true, submission: true, teamCategory: true, teamMembers: true } },
+            team: { include: { lecture: true, proposal: true, submission: true, teamCategory: true, teamMembers: { orderBy: { role: "asc" } } } },
         }
     });
     if (!teamMemberByUser) throw new AppError("Team member not found", 404);

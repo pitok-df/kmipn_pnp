@@ -72,7 +72,7 @@ export default function DashboardTeamData() {
                             {teamMembers?.teamMembers.map((member) => (
                                 <Table.Row key={uniqueId()}>
                                     <Table.Cell>
-                                        <p className="text-base font-semibold text-wrap">{member.name}</p>
+                                        <p className="text-base font-semibold text-wrap">{member.name} {member.role === 'leader' ? "(Ketua)" : ''}</p>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <p className="text-base font-semibold text-wrap">{member.nim}</p>
@@ -81,7 +81,7 @@ export default function DashboardTeamData() {
                                         <p className="text-base font-semibold text-wrap">{member.email}</p>
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <p className="text-base font-semibold text-wrap">{member.noWa}</p>
+                                        <p className="text-base font-semibold text-wrap">{member.noWA}</p>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <p className="text-base font-semibold text-wrap">{member.prodi}</p>

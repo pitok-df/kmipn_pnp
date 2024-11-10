@@ -1,9 +1,16 @@
 import RefreshRouter from "@/app/components/atoms/reFetching";
 import { api } from "@/utils/api";
 import AllTeamTables from "./dataTeam";
+import { cookies } from "next/headers";
 
 const fetchAllTeam = async () => {
-    const response = await api.get('/all-team-member');
+    const cookiesStore = cookies()
+    const accessToken = cookiesStore.get("accessToken")?.value;
+    const response = await api.get('/all-team-member', {
+        headers: {
+            "Authorization": `Bearer ${accessToken}`
+        }
+    });
     return response.data.data;
 }
 

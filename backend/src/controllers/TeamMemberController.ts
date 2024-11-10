@@ -57,7 +57,7 @@ export const getTeamMemberByUserID = async (req: Request, res: Response<Response
                 name: `${member.name}`,
                 nim: member.nim,
                 email: member.email,
-                noWa: member.no_WA,
+                noWA: member.no_WA,
                 role: member.role,
                 prodi: member.prodi,
                 fileKTM: member.fileKTM

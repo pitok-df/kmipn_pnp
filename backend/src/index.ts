@@ -9,7 +9,7 @@ import rateLimiter from "express-rate-limit";
 const apiLimiter = rateLimiter({
     windowMs: 2 * 60 * 100,
     max: 15,
-    message: "Too many request, please try again later."
+    message: "Too many request, please wait and try again later."
 });
 
 dotenv.config()
@@ -29,6 +29,6 @@ app.use('/api/v1/', apiLimiter, router);
 
 const PORT = process.env.PORT || 1212;
 
-app.listen(PORT, () => {
+app.listen(Number(PORT), () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -1,4 +1,4 @@
-import { AllTeamDataType } from "@/utils/types";
+import { AllTeamDataType, teamMemberType } from "@/utils/types";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-export default function DetailTeam({ data }: { data: AllTeamDataType }) {
+export default function DetailTeam({ data }: { data: teamMemberType }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isConfirmModal, setConfirmModal] = useState(false);
     const router = useRouter();
@@ -90,7 +90,7 @@ export default function DetailTeam({ data }: { data: AllTeamDataType }) {
                                         <thead>
                                             <tr key={uniqueId()}>
                                                 <td><p className="text-gray-800 text-[.9rem] font-bold me-3">Nama</p></td>
-                                                <td><p className="text-gray-600 text-[.9rem] font-medium">: {member.name} </p></td>
+                                                <td><p className="text-gray-600 text-[.9rem] font-medium">: {member.name} {member.role === 'leader' ? "(Ketua)" : ""}</p></td>
                                             </tr>
                                             <tr key={uniqueId()}>
                                                 <td><p className="text-gray-800 text-[.9rem] font-bold me-3">NIM</p></td>
