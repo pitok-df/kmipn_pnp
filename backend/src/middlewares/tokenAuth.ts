@@ -1,9 +1,8 @@
 import { NextFunction, Response } from "express";
 import { decodeJWT, verifyToken } from "../config/jwt";
 
-export const authenticateJWT = (req: Request | any, res: Response, next: NextFunction) => {
-    const accessToken = req.cookies.accessToken;
-
+export const authenticateJWT = (req: any | Request, res: Response, next: NextFunction) => {
+    const accessToken = req.cookies.accessToken ?? req.headers.authorization.split(" ")[1] ?? '';
     if (!accessToken) return res.status(401).json({ "massage": "Token is required." });
     const decodeToken = decodeJWT(accessToken);
     const currentTime = Math.floor(Date.now() / 1000);

@@ -8,8 +8,12 @@ export const metadata: Metadata = {
 }
 
 const fetchAllTeamInfo = async () => {
-    const response = await api.get("/all-team-member", { withCredentials: true });
-    return response.data.data;
+    try {
+        const response = await api.get("/all-team-member", { withCredentials: true });
+        return response.data.data;
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 export default async function AdminPage() {

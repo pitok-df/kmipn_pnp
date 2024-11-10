@@ -1,4 +1,5 @@
 export interface teamMemberType {
+    id?: number,
     teamName: string,
     categori: string,
     institution: string,
@@ -14,9 +15,10 @@ export interface teamMemberType {
             name: string,
             nim: string,
             email: string,
-            noWa: string,
+            noWA: string,
             prodi: string,
-            fileKTM: string
+            fileKTM: string,
+            role: string
         }
     ]
 }
@@ -33,9 +35,10 @@ export type AllTeamDataType = {
         name: string,
         nim: string,
         email: string,
-        noWA: string
+        noWa: string
         prodi: string,
-        fileKTM: string
+        fileKTM: string,
+        role: string
     }],
     linkProposal: string,
     statusProposal: string,

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { addUser, AllUser, DeleteUser, GetUserById, updateUser } from "../controllers/Usercontroller";
-import { login, logout, refreshToken, register, verifyEmail } from "../controllers/AuthController";
+import { login, logout, register, verifyEmail } from "../controllers/AuthController";
 import { authenticateJWT } from "../middlewares/tokenAuth";
 import { createCategory, deleteCategory, getAllCategory, getAllCategoryClose, updateCategory } from "../controllers/CategoryController";
 import { loginValidator } from "../validators/LoginValidator";

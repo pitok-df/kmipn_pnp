@@ -5,9 +5,11 @@ import DataCategory from "./dataCategori";
 import { Metadata } from "next";
 import AddCategory from "./addCategory";
 import RefreshRouter from "@/app/components/atoms/reFetching";
+import { cookies } from "next/headers";
 
 const fetchCategories = async () => {
-    const categori = await api.get('/categories-close');
+    const accessToken = cookies().get("accessToken")?.value;
+    const categori = await api.get('/categories-close', { headers: { Authorization: `Bearer ${accessToken}` } });
     return categori.data.data;
 }
 

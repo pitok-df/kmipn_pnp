@@ -6,7 +6,7 @@ import { uniqueId } from 'lodash';
 import { useState } from 'react';
 import DetailTeam from './detailTeam';
 
-export default function AllTeamTables({ data, className }: { data: AllTeamDataType[], className?: string }) {
+export default function AllTeamTables({ data, className }: { data: teamMemberType[], className?: string }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10); // Default items per page

@@ -3,13 +3,13 @@
  <img width=200px height=200px src="https://i.imgur.com/6wj0hh6.jpg" alt="Project logo"></a>
 </p>
 
-<h3 align="center">Project Title</h3>
+<h3 align="center">KMIPN 2025</h3>
 
 <div align="center">
 
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/kylelobo/The-Documentation-Compendium/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/kylelobo/The-Documentation-Compendium/pulls)
+[![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/PitokDf/kmipn_pnp/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/PitokDf/kmipn_pnp/pulls)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
 </div>
@@ -40,51 +40,53 @@ Write about 1-2 paragraphs describing the purpose of your project.
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
 
-### Prerequisites
+### Installing and Running Backend
 
-What things you need to install the software and how to install them.
-
-```
-Give examples
-```
-
-### Installing
-
-A step by step series of examples that tell you how to get a development env running.
-
-Say what the step will be
+Buka directory backend
 
 ```
-Give the example
+cd backend
 ```
 
-And repeat
+Install npm module
 
 ```
-until finished
+npm install
 ```
 
-End with an example of getting some data out of the system or using it for a little demo.
-
-## 🔧 Running the tests <a name = "tests"></a>
-
-Explain how to run the automated tests for this system.
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+or 
 
 ```
-Give an example
+npm i
 ```
 
-### And coding style tests
-
-Explain what these tests test and why
+Migrate database menggunakan prisma
 
 ```
-Give an example
+npx prisma migrate
 ```
+
+Jalankan server backend
+
+```
+npm run dev
+```
+
+
+### Installing and Running Backend
+
+Buka directory frontend
+
+```
+cd frontend
+```
+
+Install node module
+
+```
+npm install
+```
+
 
 ## 🎈 Usage <a name="usage"></a>
 
@@ -96,16 +98,16 @@ Add additional notes about how to deploy this on a live system.
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 
-- [MongoDB](https://www.mongodb.com/) - Database
+- [PostgresSql](https://www.mongodb.com/) - Database
 - [Express](https://expressjs.com/) - Server Framework
 - [NextJs](https://vuejs.org/) - Web Framework
 - [NodeJs](https://nodejs.org/en/) - Server Environment
 
-## ✍️ Authors <a name = "authors"></a>
+## ✍️ Authors <a name = "authors">Pito Desri Pauzi</a>
 
-- [@kylelobo](https://github.com/kylelobo) - Idea & Initial work
+- [@pitok_df](https://www.instagram.com/pitok_df/) - Idea & Initial work
 
-See also the list of [contributors](https://github.com/kylelobo/The-Documentation-Compendium/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/PitokDf/kmipn_pnp/contributors) who participated in this project.
 
 ## 🎉 Acknowledgements <a name = "acknowledgement"></a>
 

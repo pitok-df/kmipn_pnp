@@ -75,7 +75,7 @@ model Team {
 }
 
 enum RoleTeamMember {
-  leaderr4
+  leader
   member
 }
 
