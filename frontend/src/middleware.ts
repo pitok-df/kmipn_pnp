@@ -22,12 +22,12 @@ function isTokenExpired(token: string): boolean {
 
 // Daftar path yang diizinkan untuk setiap role
 const allowedPathsByRole: { [key: string]: string[] } = {
-    participant: [
+    "participant": [
         "/dashboard/team",
         "/dashboard",
         "/dashboard/team/compleate",
     ],
-    admin: [
+    "admin": [
         "/dashboard/admin",
         "/dashboard/admin/settings",
         "/dashboard/users",
@@ -35,7 +35,7 @@ const allowedPathsByRole: { [key: string]: string[] } = {
         "/dashboard/icons/solar",
         "/dashboard/admin-team",
     ],
-    jury: [
+    "juri": [
         "/dashboard/jury",
         "/dashboard/jury/review",
         "/dashboard/jury/feedback"
@@ -58,6 +58,7 @@ export function middleware(request: NextRequest) {
         if (!isTokenExpired(token)) {
             const decodeJWT: UserDecode = jwtDecode(token);
             const userRole = decodeJWT.user.role;
+
             const teamDataCompleate = request.cookies.get("teamDataCompleate")?.value === 'true';
 
             // if (!decodeJWT.user.verified && !urlPath.startsWith('/auth/verify-email')) {
@@ -87,8 +88,13 @@ export function middleware(request: NextRequest) {
 
                 // Cek akses berdasarkan daftar izin di allowedPathsByRole
                 const allowedPaths = allowedPathsByRole[userRole] || [];
-                if (!allowedPaths.some((allowedPath) => urlPath.startsWith(allowedPath))) {
-                    return redirectTo("/unauthorized", request);
+                console.log(allowedPaths.includes(request.nextUrl.pathname));
+                console.log("role: " + userRole);
+
+                console.log("url :" + urlPath.startsWith("/dashboard/admin-team"));
+
+                if (!allowedPaths.includes(request.nextUrl.pathname)) {
+                    return NextResponse.rewrite(new URL("/unauthorized", request.url));
                 }
             }
 

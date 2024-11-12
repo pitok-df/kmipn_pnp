@@ -5,12 +5,16 @@ import { Select, TextInput } from 'flowbite-react';
 import { uniqueId } from 'lodash';
 import { useState } from 'react';
 import DetailTeam from './detailTeam';
+import { useSearchParams } from 'next/navigation';
 
 export default function AllTeamTables({ data, className }: { data: teamMemberType[], className?: string }) {
+    const filterDefault = useSearchParams().get("verified");
+    console.log(filterDefault);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10); // Default items per page
-    const [filter, setFilter] = useState(''); // Default items per page
+    const [filter, setFilter] = useState(filterDefault ?? ''); // Default items per page
 
     const filteredTeams = data.filter(team => {
         const mathcesSearch = team.teamName.toLowerCase().includes(searchTerm.toLowerCase());
