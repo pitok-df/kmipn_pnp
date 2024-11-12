@@ -53,6 +53,7 @@ export const getDataTeamService = async () => {
 
 export const verifyTeamService = async (teamID: number) => {
     const verifiedTeam = await db.team.update({
+        include: { teamMembers: true },
         where: {
             id: teamID
         }, data: { verified: true }
@@ -60,4 +61,14 @@ export const verifyTeamService = async (teamID: number) => {
 
     if (!verifiedTeam) throw new AppError("Failed verified team", 400);
     return verifiedTeam;
+}
+
+export const unVerifyTeamService = async (teamID: number) => {
+    const unverifiedTeam = await db.team.update({
+        where: { id: teamID },
+        data: { verified: false }
+    });
+
+    if (!unverifiedTeam) throw new AppError("Failed unverified team", 400);
+    return unverifiedTeam;
 }

@@ -59,6 +59,6 @@ router.put('/categories/:id', authenticateJWT, updateCategoriValidator, updateCa
 router.delete('/categories/:id', authenticateJWT, updateCategoriValidator, deleteCategory);
 router.get('/user-login', authenticateJWT, async (req, res) => {
     const user = await userLogin(req);
-    return res.status(200).json({ user })
+    return res.status(200).json({ user });
 });
 export default router;

@@ -3,7 +3,11 @@ import { createTeamMember, getTeamMemberByUserIDService } from "../services/Team
 import { AppError } from "../utils/AppError";
 import { ResponseApi } from "../types/ApiType";
 import { userLogin } from "../config/jwt";
-import { verifyTeamService } from "../services/TeamService";
+import { unVerifyTeamService, verifyTeamService } from "../services/TeamService";
+import path from "path";
+import { readHtmlFile } from "../utils/readHtmlFile";
+import { replacePlaceholders } from "../utils/replacePlaceholder";
+import { sendEmail } from "../utils/NodeMailer";
 
 export const storeTeamMember = async (req: Request, res: Response<ResponseApi>) => {
     try {
@@ -87,9 +91,29 @@ export const getTeamMemberByUserID = async (req: Request, res: Response<Response
 
 export const verifyTeam = async (req: Request, res: Response<ResponseApi>) => {
     try {
-        const { teamID } = req.params
+        const { teamID } = req.params;
         const verifyTeam = await verifyTeamService(Number(teamID));
-        return res.status(200).json({ success: true, statusCode: 200, msg: "Successfully verify team.", data: verifyTeam })
+
+        const leaderTeam = verifyTeam.teamMembers.filter((member) => { return member.role === "leader" })
+
+        // mengirim email verifikasi ke user
+        const filePath = path.join(__dirname, '../templates/TeamVerifyNotif.html')
+        let emailContent = await readHtmlFile(filePath);
+        const link_to_dashboard = `${process.env.FRONTEND_URL}/dashboard`;
+        emailContent = replacePlaceholders(emailContent, {
+            "{{ nama_ketua }}": leaderTeam[0].name,
+            "{{ nama_team }}": verifyTeam.name,
+            "{{ link_to_dashboard }}": link_to_dashboard
+        })
+        const sendEmailSuccess = await sendEmail(leaderTeam[0].email, "Team Verified", emailContent);
+
+        // jika email verifikasi gagal terkirim maka lempar error dan hapus user
+        if (!sendEmailSuccess) {
+            unVerifyTeamService(Number(teamID));
+            throw new AppError("Failed send email", 400);
+        }
+
+        return res.status(200).json({ success: true, statusCode: 200, msg: "Successfully verify team.", data: { verifyTeam, leaderTeam } })
     } catch (error) {
         if (error instanceof AppError) {
             return res.status(error.statusCode).json({
