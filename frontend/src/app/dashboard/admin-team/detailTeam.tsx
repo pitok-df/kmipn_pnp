@@ -59,24 +59,24 @@ export default function DetailTeam({ data }: { data: teamMemberType }) {
                     <table className="mb-5 grid">
                         <thead>
                             <tr>
-                                <td><p className="text-gray-800 text-[.98rem] font-bold me-3">Nama Team</p></td>
-                                <td><p className="text-gray-600 text-[.98rem] font-medium">: {data.teamName} </p></td>
+                                <td><h3 className="font-bold me-3">Nama Team</h3></td>
+                                <td><h3 className=" font-normal">: {data.teamName} </h3></td>
                             </tr>
                             <tr>
-                                <td><p className="text-gray-800 text-[.98rem] font-bold me-3">Kategori</p></td>
-                                <td><p className="text-gray-600 text-[.98rem] font-medium">: {data.categori} </p></td>
+                                <td><h3 className="font-bold me-3">Kategori</h3></td>
+                                <td><h3 className=" font-normal">: {data.categori} </h3></td>
                             </tr>
                             <tr>
-                                <td><p className="text-gray-800 text-[.98rem] font-bold me-3">Politeknik</p></td>
-                                <td><p className="text-gray-600 text-[.98rem] font-medium">: {data.institution} </p></td>
+                                <td><h3 className="font-bold me-3">Politeknik</h3></td>
+                                <td><h3 className=" font-normal">: {data.institution} </h3></td>
                             </tr>
                             <tr>
-                                <td><p className="text-gray-800 text-[.98rem] font-bold me-3">Nama Dosen</p></td>
-                                <td><p className="text-gray-600 text-[.98rem] font-medium">: {`${data.lectureName} (${data.lectureNip})`} </p></td>
+                                <td><h3 className="font-bold me-3">Nama Dosen</h3></td>
+                                <td><h3 className=" font-normal">: {`${data.lectureName} (${data.lectureNip})`} </h3></td>
                             </tr>
                             <tr>
-                                <td><p className="text-gray-800 text-[.98rem] font-bold me-3">Proposal</p></td>
-                                <td><p className="text-gray-600 text-[.98rem] font-medium">: {data.linkProposal ? <Link className="text-blue-500" target="_blank" href={data.linkProposal}>Lihat Proposal</Link> : "Belum upload"} </p></td>
+                                <td><h3 className="font-bold me-3">Proposal</h3></td>
+                                <td><h3 className=" font-normal">: {data.linkProposal ? <Link className="text-blue-500" target="_blank" href={data.linkProposal}>Lihat Proposal</Link> : "Belum upload"} </h3></td>
                             </tr>
                         </thead>
                     </table>
@@ -95,21 +95,21 @@ export default function DetailTeam({ data }: { data: teamMemberType }) {
                                                 <td><p className="text-gray-600 text-[.9rem] font-medium">: {member.name} {member.role === 'leader' ? "(Ketua)" : ""}</p></td>
                                             </tr>
                                             <tr key={uniqueId()}>
-                                                <td><h3 className="text-gray-800 text-[.9rem] font-bold me-3">NIM</h3></td>
+                                                <td><h3 className=" font-bold me-3">NIM</h3></td>
                                                 <td><p className="text-gray-600 text-[.9rem] font-medium">: {member.nim} </p></td>
                                             </tr>
                                             <tr key={uniqueId()}>
                                                 <td>
-                                                    <h3 className="text-gray-800 text-[.9rem] font-bold me-3">Prodi</h3>
+                                                    <h3 className=" font-bold me-3">Prodi</h3>
                                                 </td>
                                                 <td><p className="text-gray-600 text-[.9rem] font-medium">: {member.prodi} </p></td>
                                             </tr >
                                             <tr key={uniqueId()}>
-                                                <td><p className="text-gray-800 text-[.9rem] font-bold me-3">Email</p></td>
+                                                <td><h3 className=" font-bold me-3">Email</h3></td>
                                                 <td><p className="text-gray-600 text-[.9rem] font-medium">: {member.email} </p></td>
                                             </tr>
                                             <tr key={uniqueId()}>
-                                                <td><p className="text-gray-800 text-[.9rem] font-bold me-3">No WA</p></td>
+                                                <td><h3 className=" font-bold me-3">No WA</h3></td>
                                                 <td><p className="text-gray-600 text-[.9rem] font-medium">: {member.noWA} </p></td>
                                             </tr>
                                         </thead>

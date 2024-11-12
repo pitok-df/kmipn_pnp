@@ -47,14 +47,14 @@ export default function DashboardTeamData() {
 
     return (
         <>
-            <div className="bg-white p-5 rounded-sm shadow-md mb-8">
+            <div className="bg-white p-5 rounded-sm shadow-md mb-8 border-l-4 border-warning">
                 <h3 className="text-xl font-semibold mb-3">Informasi Dosen</h3>
                 <div className="flex flex-co sm:flex-row sm:items-center gap-4">
                     <p className="text-gray-700">Nama Dosen: <span className="font-semibold">{teamMembers?.lectureName}</span></p>
                     <p className="text-gray-700">NIDN/NIP Dosen: <span className="font-semibold">{teamMembers?.lectureNip}</span></p>
                 </div>
             </div>
-            <div className="rounded-sm dark:shadow-dark-md shadow-md bg-white dark:bg-darkgray py-6 px-0 relative w-full break-words">
+            <div className="rounded-sm dark:shadow-dark-md shadow-md bg-white dark:bg-darkgray py-6 px-0 relative w-full break-words border-l-4 border-warning">
                 <div className="px-6 mb-3 divide-y divide-border dark:divide-darkborder">
                     <h3 className="card-title">Anggota Team</h3>
                 </div>
@@ -72,19 +72,19 @@ export default function DashboardTeamData() {
                             {teamMembers?.teamMembers.map((member) => (
                                 <Table.Row key={uniqueId()}>
                                     <Table.Cell>
-                                        <p className="text-base font-semibold text-wrap">{member.name} {member.role === 'leader' ? "(Ketua)" : ''}</p>
+                                        <h3 className="font-normal text-wrap">{member.name} {member.role === 'leader' ? "(Ketua)" : ''}</h3>
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <p className="text-base font-semibold text-wrap">{member.nim}</p>
+                                        <p className=" font-normal text-wrap">{member.nim}</p>
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <p className="text-base font-semibold text-wrap">{member.email}</p>
+                                        <p className=" font-normal text-wrap">{member.email}</p>
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <p className="text-base font-semibold text-wrap">{member.noWA}</p>
+                                        <p className=" font-normal text-wrap">{member.noWA}</p>
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <p className="text-base font-semibold text-wrap">{member.prodi}</p>
+                                        <p className=" font-normal text-wrap">{member.prodi}</p>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Link href={member.fileKTM} target="_blank">

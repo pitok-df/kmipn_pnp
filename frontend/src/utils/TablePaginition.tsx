@@ -88,37 +88,35 @@ export default function Table<T>({ data, headers, columns, className, perPages =
                 </thead>
                 <tbody>
                     {paginatedData.map((item, index) => (
-                        <>
-                            <tr key={uniqueId() as string}>
-                                {headers.map((item) => (item === '#' ?
-                                    <td className='px-4 py-2 border'>
-                                        {(currentPage - 1) * itemsPerPage + index + 1}
-                                    </td>
-                                    : ""))}
-                                {columns.map((column, colIndex) => (
-                                    <td key={colIndex} className="px-4 py-2 border">
-                                        {String(item[column] ?? '~')}
-                                    </td>
-                                ))}
-                                {(onEdit || onDelete || onDetail) && (
-                                    <td className="px-4 py-2 border flex gap-3">
-                                        {onEdit && <Button color={'warning'} size={'sm'} onClick={() => onEdit(item)} className="border text-white bg-warning hover:bg-warning w-max outline-none focus:outline-none">
-                                            <FontAwesomeIcon icon={faPencil} size="1x" color="white" />
-                                        </Button>}
-                                        {onDelete &&
-                                            <Button as={'button'} onClick={() => onDelete(item)} color={'error'} size={'sm'}>
-                                                <FontAwesomeIcon icon={faTrash} />
-                                            </Button>
-                                        }
-                                        {onDetail &&
-                                            <Button as={Link} href='#' onClick={() => onDetail(item)} color={'success'} size={'sm'}>
-                                                <FontAwesomeIcon icon={faInfoCircle} />
-                                            </Button>
-                                        }
-                                    </td>
-                                )}
-                            </tr>
-                        </>
+                        <tr key={uniqueId()}>
+                            {headers.map((item) => (item === '#' ?
+                                <td key={uniqueId()} className='px-4 py-2 border'>
+                                    {(currentPage - 1) * itemsPerPage + index + 1}
+                                </td>
+                                : ""))}
+                            {columns.map((column, colIndex) => (
+                                <td key={colIndex} className="px-4 py-2 border">
+                                    {String(item[column] ?? '~')}
+                                </td>
+                            ))}
+                            {(onEdit || onDelete || onDetail) && (
+                                <td key={uniqueId()} className="px-4 py-2 border flex gap-3">
+                                    {onEdit && <Button color={'warning'} size={'sm'} onClick={() => onEdit(item)} className="border text-white bg-warning hover:bg-warning w-max outline-none focus:outline-none">
+                                        <FontAwesomeIcon icon={faPencil} size="1x" color="white" />
+                                    </Button>}
+                                    {onDelete &&
+                                        <Button as={'button'} onClick={() => onDelete(item)} color={'error'} size={'sm'}>
+                                            <FontAwesomeIcon icon={faTrash} />
+                                        </Button>
+                                    }
+                                    {onDetail &&
+                                        <Button as={Link} href='#' onClick={() => onDetail(item)} color={'success'} size={'sm'}>
+                                            <FontAwesomeIcon icon={faInfoCircle} />
+                                        </Button>
+                                    }
+                                </td>
+                            )}
+                        </tr>
                     ))}
                 </tbody>
             </table>

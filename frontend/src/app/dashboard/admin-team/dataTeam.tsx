@@ -9,8 +9,6 @@ import { useSearchParams } from 'next/navigation';
 
 export default function AllTeamTables({ data, className }: { data: teamMemberType[], className?: string }) {
     const filterDefault = useSearchParams().get("verified");
-    console.log(filterDefault);
-
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10); // Default items per page

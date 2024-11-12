@@ -88,11 +88,6 @@ export function middleware(request: NextRequest) {
 
                 // Cek akses berdasarkan daftar izin di allowedPathsByRole
                 const allowedPaths = allowedPathsByRole[userRole] || [];
-                console.log(allowedPaths.includes(request.nextUrl.pathname));
-                console.log("role: " + userRole);
-
-                console.log("url :" + urlPath.startsWith("/dashboard/admin-team"));
-
                 if (!allowedPaths.includes(request.nextUrl.pathname)) {
                     return NextResponse.rewrite(new URL("/unauthorized", request.url));
                 }
