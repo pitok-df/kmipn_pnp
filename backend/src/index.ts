@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import path from 'path';
 import rateLimiter from "express-rate-limit";
+import helmet from "helmet"
 
 const apiLimiter = rateLimiter({
     windowMs: 2 * 60 * 100,
@@ -16,8 +17,8 @@ dotenv.config()
 
 const app = express();
 
+app.use(helmet())
 app.use(express.static(path.join(__dirname, '../public')));
-
 app.use(cookieParser());
 app.use(cors({
     origin: process.env.FRONTEND_URL,

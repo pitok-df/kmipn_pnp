@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 
 export default function DetailTeam({ data }: { data: teamMemberType }) {
     const [isOpen, setIsOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [isConfirmModal, setConfirmModal] = useState(false);
     const router = useRouter();
 
@@ -25,6 +26,7 @@ export default function DetailTeam({ data }: { data: teamMemberType }) {
 
     const verifyTeam = async () => {
         try {
+            setIsLoading(true)
             const response = await axios.put(`/api/v1/team-member/${data.id}`);
             if (response.status === 200) {
                 toast.success(response.data.msg)
@@ -34,7 +36,7 @@ export default function DetailTeam({ data }: { data: teamMemberType }) {
             if (error.status === 400) {
                 toast.error(error.response.data.msg)
             }
-        }
+        } finally { setIsLoading(false) }
     }
     return (
         <>
@@ -89,15 +91,17 @@ export default function DetailTeam({ data }: { data: teamMemberType }) {
                                     <table className="mb-3">
                                         <thead>
                                             <tr key={uniqueId()}>
-                                                <td><p className="text-gray-800 text-[.9rem] font-bold me-3">Nama</p></td>
+                                                <td><h3>Nama</h3></td>
                                                 <td><p className="text-gray-600 text-[.9rem] font-medium">: {member.name} {member.role === 'leader' ? "(Ketua)" : ""}</p></td>
                                             </tr>
                                             <tr key={uniqueId()}>
-                                                <td><p className="text-gray-800 text-[.9rem] font-bold me-3">NIM</p></td>
+                                                <td><h3 className="text-gray-800 text-[.9rem] font-bold me-3">NIM</h3></td>
                                                 <td><p className="text-gray-600 text-[.9rem] font-medium">: {member.nim} </p></td>
                                             </tr>
                                             <tr key={uniqueId()}>
-                                                <td><p className="text-gray-800 text-[.9rem] font-bold me-3">Prodi</p></td>
+                                                <td>
+                                                    <h3 className="text-gray-800 text-[.9rem] font-bold me-3">Prodi</h3>
+                                                </td>
                                                 <td><p className="text-gray-600 text-[.9rem] font-medium">: {member.prodi} </p></td>
                                             </tr >
                                             <tr key={uniqueId()}>
@@ -132,10 +136,12 @@ export default function DetailTeam({ data }: { data: teamMemberType }) {
                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                         </svg>
                         <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to verify <strong>{data.teamName}</strong> team?</h3>
-                        <button type="button" onClick={verifyTeam} className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-700 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
-                            Verify
-                        </button>
-                        <button onClick={handleModalConfirm} type="button" className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Cancel</button>
+                        <div className="flex justify-center gap-3">
+                            <Button color={'primary'} type="button" onClick={verifyTeam} disabled={isLoading}>
+                                {isLoading ? "Verifing..." : "Verify"}
+                            </Button>
+                            <Button onClick={handleModalConfirm} type="button" color={'error'}>Cancel</Button>
+                        </div>
                     </div>
                 </Modal.Body>
             </Modal>
