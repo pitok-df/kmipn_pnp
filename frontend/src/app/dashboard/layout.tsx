@@ -16,7 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Header />
           <div className={`container mx-auto py-30`}>
             <ProgressBar color="#29d"
-              height="3"
+              height="4"
               options={{ showSpinner: false }}
               shallowRouting
             />

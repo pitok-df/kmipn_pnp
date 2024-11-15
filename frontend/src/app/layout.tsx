@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import 'simplebar-react/dist/simplebar.min.css';
 import "./css/globals.css";
 import "./css/nprogress.css";
-import { Flowbite, ThemeModeScript } from "flowbite-react";
+import { Flowbite, Navbar, ThemeModeScript } from "flowbite-react";
 import customTheme from "@/utils/theme/custom-theme";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -25,7 +25,9 @@ export default function RootLayout({
         <ThemeModeScript />
       </head>
       <body className={`${inter.className}`}>
-        <Flowbite theme={{ theme: customTheme }}>{children}</Flowbite>
+        <Flowbite theme={{ theme: customTheme }}>
+          {children}
+        </Flowbite>
       </body>
     </html>
   );

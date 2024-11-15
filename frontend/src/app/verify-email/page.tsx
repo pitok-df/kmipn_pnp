@@ -40,7 +40,7 @@ export default function VerifyEmail() {
 
     return (
         <div>
-            {status}
+            <h3>{status}</h3>
         </div>
     );
 }
