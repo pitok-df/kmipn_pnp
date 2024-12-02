@@ -2,7 +2,7 @@ import { db } from "../config/database"
 import { AppError } from "../utils/AppError";
 
 export const getAllDataCategory = async () => {
-    const categori = await db.category.findMany();
+    const categori = await db.category.findMany({ orderBy: { id: "desc" } });
     return categori;
 }
 

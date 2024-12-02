@@ -9,7 +9,7 @@ import helmet from "helmet"
 
 const apiLimiter = rateLimiter({
     windowMs: 2 * 60 * 100,
-    max: 15,
+    max: 30,
     message: "Too many request, please wait and try again later."
 });
 

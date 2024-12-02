@@ -9,6 +9,7 @@ import path from "path";
 import { readHtmlFile } from "../utils/readHtmlFile";
 import { replacePlaceholders } from "../utils/replacePlaceholder";
 import { findToken } from "./UserTokenService";
+import { User } from "@prisma/client";
 
 dotenv.config();
 
@@ -27,32 +28,7 @@ export const registerService = async (email: string, password: string, name: str
     // membuat user baru
     const newUser = await db.user.create({ data: { name, email, password: hashedPassword } });
 
-    // membuat verifikasi token dengan dependency crypto
-    const verivicationToken = crypto.randomBytes(32).toString("hex");
-    const tokenExpiryDate = new Date(); // set token expire
-    tokenExpiryDate.setHours(tokenExpiryDate.getHours() + 1)
-
-    // membuat token untuk user
-    await db.userToken.create({ data: { token: verivicationToken, userId: newUser.id, expiresAt: tokenExpiryDate } });
-
-    // mengirim email verifikasi ke user
-    const filePath = path.join(__dirname, '../templates/VerivicationEmail.html')
-    let emailContent = await readHtmlFile(filePath);
-    const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verivicationToken}`;
-    const placeholders = {
-        "{{ verificationLink }}": verificationLink,
-        "{{ type_of_action }}": "Verify email",
-        "{{ name }}": name
-    };
-    emailContent = replacePlaceholders(emailContent, placeholders)
-    const sendEmailSuccess = await sendEmail(newUser.email, "Verify email", emailContent);
-
-    // jika email verifikasi gagal terkirim maka lempar error dan hapus user
-    if (!sendEmailSuccess) {
-        Delete(newUser.id);
-        throw new AppError("Failed send verivication email", 400);
-    }
-
+    await sendEmailVerfikasi(newUser, password)
     // kembalikan data user
     return newUser;
 }
@@ -73,9 +49,39 @@ export const verifyTokenService = async (token: string) => {
     return true;
 }
 
+export const sendEmailVerfikasi = async (user: User, password?: string) => {
+    // membuat verifikasi token dengan dependency crypto
+    const verivicationToken = crypto.randomBytes(32).toString("hex");
+    const tokenExpiryDate = new Date(); // set token expire
+    tokenExpiryDate.setHours(tokenExpiryDate.getHours() + 1)
+
+    // membuat token untuk user
+    await db.userToken.create({ data: { token: verivicationToken, userId: user.id, expiresAt: tokenExpiryDate } });
+
+    // mengirim email verifikasi ke user
+    const filePath = path.join(__dirname, '../templates/VerivicationEmail.html')
+    let emailContent = await readHtmlFile(filePath);
+    const verificationLink = `${process.env.FRONTEND_URL}/auth/verify-email?token=${verivicationToken}`;
+    const placeholders = {
+        "{{ verificationLink }}": verificationLink,
+        "{{ type_of_action }}": "Verify email",
+        "{{ name }}": user.name,
+        "{{ email }}": user.email,
+        "{{ password }}": password ?? ""
+    };
+    emailContent = replacePlaceholders(emailContent, placeholders)
+    const sendEmailSuccess = await sendEmail(user.email, "Verify email", emailContent);
+
+    // jika email verifikasi gagal terkirim maka lempar error dan hapus user
+    if (!sendEmailSuccess) {
+        Delete(user.id);
+        throw new AppError("Periksa koneksi internetmu!", 400);
+    }
+}
+
 export const loginService = async (email: string, password: string) => {
     const user = await db.user.findUnique({ where: { email }, include: { teamMember: true } });
-    if (!user) throw new AppError("User not found", 404);
+    if (!user) throw new AppError("Pengguna belum terdaftar.", 404);
     // cek apakah email sudah di verifikasi
     if (!user?.verified) throw new AppError("Please verify your email.", 400);
     // cek apakah user tersedia dan password tersedia

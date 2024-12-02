@@ -1,18 +1,21 @@
 import { Router } from "express";
-import { addUser, AllUser, DeleteUser, GetUserById, updateUser } from "../controllers/Usercontroller";
+import { addUser, AllUser, CheckUserTeam, DeleteUser, GetUserById, updateUser } from "../controllers/Usercontroller";
 import { login, logout, register, verifyEmail } from "../controllers/AuthController";
 import { authenticateJWT } from "../middlewares/tokenAuth";
 import { createCategory, deleteCategory, getAllCategory, getAllCategoryClose, updateCategory } from "../controllers/CategoryController";
 import { loginValidator } from "../validators/LoginValidator";
 import { createTeam, getDataTeam } from "../controllers/TeamController";
 import { createLecture } from "../controllers/LectureController";
-import { uploadFile } from "../middlewares/mutlerUploadFile";
 import { createProposal } from "../controllers/ProposalController";
-import { getTeamMemberByUserID, storeTeamMember, verifyTeam } from "../controllers/TeamMemberController";
+import { getTeamMemberByUserID, saveTeamMember, storeTeamMember, verifyTeam } from "../controllers/TeamMemberController";
 import { checkDataCompleate } from "../middlewares/checkDataCompleate";
 import { userLogin } from "../config/jwt";
 import { addUserValidator, updateUserValidator } from "../validators/userValidator";
 import { updateCategoriValidator } from "../validators/CategoriValidator";
+import { uploadFile } from "../middlewares/mutlerUploadFile";
+import { uploadHandler } from "../middlewares/uploadKtm";
+import { db } from "../config/database";
+import { RegisterValidator } from "../validators/RegisterValidator";
 
 const router = Router();
 
@@ -34,7 +37,9 @@ router.post('/users', authenticateJWT, addUserValidator, addUser);
 router.get('/users/:id', authenticateJWT, GetUserById);
 router.put('/users/:id', authenticateJWT, updateUserValidator, updateUser);
 router.delete('/users/:id', authenticateJWT, DeleteUser);
-router.post('/register', register);
+
+// authenticate  route
+router.post('/register', RegisterValidator, register);
 router.post('/login', loginValidator(), login);
 router.post('/verify-email', verifyEmail);
 router.post('/logout', logout);
@@ -42,15 +47,21 @@ router.post('/logout', logout);
 router.post("/lecture", authenticateJWT, createLecture);
 router.post("/team", authenticateJWT, createTeam);
 router.post("/upload-proposal", authenticateJWT, uploadFile.single("file_proposal"), createProposal);
-router.post("/team-member", authenticateJWT, uploadFile.single("file_ktm"), storeTeamMember);
+router.post(
+    "/save-team-member",
+    authenticateJWT,
+    uploadFile.fields([
+        { name: 'ktm_agg1', maxCount: 1 }, { name: 'ktm_agg2', maxCount: 1 },
+        { name: 'ktm_agg3', maxCount: 1 }
+    ]),
+    saveTeamMember
+);
+
+
 router.get("/all-team-member", authenticateJWT, getDataTeam);
 router.get("/team-member", authenticateJWT, getTeamMemberByUserID);
 router.put("/team-member/:teamID", authenticateJWT, verifyTeam);
-router.get("/check-team-compleate", authenticateJWT, checkDataCompleate, (req, res) => {
-    res.cookie("teamDataCompleate", false, { httpOnly: true, secure: true, sameSite: "strict" });
-    return res.json({ teamDataCompleate: false });
-});
-
+router.get("/check-team-compleate", authenticateJWT, CheckUserTeam);
 
 router.get('/categories', getAllCategory);
 router.post('/categories', authenticateJWT, updateCategoriValidator, createCategory);

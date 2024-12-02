@@ -1,6 +1,6 @@
 <p align="center">
   <a href="" rel="noopener">
- <img width=200px height=200px src="https://i.imgur.com/6wj0hh6.jpg" alt="Project logo"></a>
+ <img width=200px height=200px src="https://media.licdn.com/dms/image/v2/D4D03AQG7TgglFclaIw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1730623577381?e=2147483647&v=beta&t=nc8TX7BlSQqDHoqMiREDbToogJ5UM0ANH_XkogtBEoY" alt="Project logo"></a>
 </p>
 
 <h3 align="center">KMIPN 2025</h3>
@@ -87,6 +87,9 @@ Install node module
 npm install
 ```
 
+```
+npm run dev
+```
 
 ## 🎈 Usage <a name="usage"></a>
 

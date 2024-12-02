@@ -1,108 +1,93 @@
-import { jwtDecode } from 'jwt-decode';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
 
-interface UserDecode {
-    user: { role: "participant" | "admin" | "jury"; teamMember: boolean; verified: boolean };
-    exp: number;
-}
-
-// Fungsi untuk redirect ke halaman tertentu
-function redirectTo(urlPath: string, request: NextRequest) {
-    const redirectUrl = new URL(urlPath, request.url);
-    return NextResponse.redirect(redirectUrl);
-}
-
-// Fungsi untuk mengecek apakah token sudah expired
-function isTokenExpired(token: string): boolean {
-    const { exp }: UserDecode = jwtDecode(token);
-    const currentTime = Math.floor(Date.now() / 1000);
-    return currentTime > exp;
-}
-
-// Daftar path yang diizinkan untuk setiap role
-const allowedPathsByRole: { [key: string]: string[] } = {
+const allowedPathByRole: { [key: string]: string[] } = {
     "participant": [
-        "/dashboard/team",
-        "/dashboard",
-        "/dashboard/team/compleate",
+        "/participant",
+        "/participant/team",
+        "/participant/complete-team"
     ],
     "admin": [
-        "/dashboard/admin",
-        "/dashboard/admin/settings",
-        "/dashboard/users",
-        "/dashboard/categories",
-        "/dashboard/icons/solar",
-        "/dashboard/admin-team",
+        "/admin",
+        "/admin/categories",
+        "/admin/teams/proposal",
+        "/admin/teams/all",
+        "/admin/users",
     ],
     "juri": [
-        "/dashboard/jury",
-        "/dashboard/jury/review",
-        "/dashboard/jury/feedback"
+        "/juri"
     ]
-};
+}
 
-export function middleware(request: NextRequest) {
-    const token = request.cookies.get('accessToken')?.value;
-    const urlPath = request.nextUrl.pathname;
+export async function middleware(req: NextRequest) {
+    const { pathname } = req.nextUrl;
+    const token: any = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
     if (!token) {
-        if (!urlPath.startsWith("/auth/login") && !urlPath.startsWith("/auth/register")) {
-            return redirectTo("/auth/login", request);
+        // jika user mengakses halaman login, biarkan mereka di halaman tersebut
+        if (pathname.startsWith("/auth/login")) {
+            return NextResponse.next();
         }
-    } else {
-        if (urlPath.startsWith("/auth/login") || urlPath.startsWith("/auth/register")) {
-            return redirectTo("/dashboard", request);
-        }
-
-        if (!isTokenExpired(token)) {
-            const decodeJWT: UserDecode = jwtDecode(token);
-            const userRole = decodeJWT.user.role;
-
-            const teamDataCompleate = request.cookies.get("teamDataCompleate")?.value === 'true';
-
-            // if (!decodeJWT.user.verified && !urlPath.startsWith('/auth/verify-email')) {
-            //     console.log(!decodeJWT.user.verified && !urlPath.startsWith('/auth/verify-email'));
-            //     if (!request.headers.get("X-Redirected")) {
-            //         const response = redirectTo("/auth/verify-email", request);
-            //         response.headers.set("X-Redirected", 'true');
-            //         return response;
-            //     }
-            // }
-
-            if (!decodeJWT.user.verified) {
-                if (!urlPath.startsWith("/auth/verify-email")) {
-                    return redirectTo("/auth/verify-email", request);
-                }
-            }
-            else {
-
-                if (userRole === "participant") {
-                    if (!teamDataCompleate && !urlPath.startsWith("/dashboard/team/compleate")) {
-                        return redirectTo("/dashboard/team/compleate", request);
-                    }
-                    if (teamDataCompleate && urlPath.startsWith("/dashboard/team/compleate")) {
-                        return redirectTo("/dashboard/team", request);
-                    }
-                }
-
-                // Cek akses berdasarkan daftar izin di allowedPathsByRole
-                const allowedPaths = allowedPathsByRole[userRole] || [];
-                if (!allowedPaths.includes(request.nextUrl.pathname)) {
-                    return NextResponse.rewrite(new URL("/unauthorized", request.url));
-                }
-            }
-
-        } else {
-            const response = redirectTo("/auth/login", request);
-            response.cookies.delete("accessToken");
-            return response;
-        }
+        // jika user belum login, arahkan ke halaman login
+        return NextResponse.redirect(new URL("/auth/login", req.nextUrl))
     }
 
-    return NextResponse.next();
+    if (token) {
+
+        const currentTime = Math.floor(new Date().getTime() / 1000)
+        const expire = token.exp;
+
+        // jika token sudah expire, maka redirect pengguna ke halaman login
+        if (currentTime > expire) {
+            // jika si pengguna sudah di halaman login, yasudah biarin.
+            if (pathname.startsWith("/auth/login")) {
+                return NextResponse.next();
+            }
+
+            return NextResponse.redirect(new URL("/auth/login", req.nextUrl))
+        }
+
+        const roleUser: "admin" | "participant" | "juri" = token.user.role;
+        const teamDataCompleate = token.teamDataCompleate;
+
+        req.headers.set("Authorization", `Bearer ${token.accessToken}`);
+
+        if (roleUser === "admin") {
+            if (pathname.startsWith("/auth/login")) {
+                return NextResponse.redirect(new URL("/admin", req.nextUrl))
+            }
+        } else if (roleUser === "participant") {
+            if (pathname.startsWith("/auth/login")) {
+                return NextResponse.redirect(new URL("/participant", req.nextUrl))
+            }
+        } else if (roleUser === "juri") {
+            if (pathname.startsWith("/auth/login")) {
+                return NextResponse.redirect(new URL("/juri", req.nextUrl));
+            }
+        }
+
+        if (roleUser === "participant" && !teamDataCompleate) {
+            req.headers.set("Authorization", `Bearer ${token.accessToken}`)
+            if (pathname.startsWith("/participant/complete-team")) {
+                return NextResponse.next();
+            }
+
+            return NextResponse.redirect(new URL(`/participant/complete-team`, req.nextUrl))
+        } else {
+            if (pathname.startsWith("/participant/complete-team")) {
+                return NextResponse.redirect(new URL(`/participant`, req.nextUrl))
+            }
+        }
+
+        const allowedPath = allowedPathByRole[roleUser] || [];
+        if (!allowedPath.includes(req.nextUrl.pathname)) {
+            return NextResponse.rewrite(new URL("/unauthorized", req.nextUrl))
+        }
+
+        return NextResponse.next();
+    }
 }
 
 export const config = {
-    matcher: ["/dashboard/:path*", "/auth/:path*"],
-};
+    matcher: ["/auth/login", "/admin/:path*", "/participant/:path*", "/juri/:path*"]
+}

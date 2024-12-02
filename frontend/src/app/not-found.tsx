@@ -1,34 +1,13 @@
-import Image from "next/image";
-import React from "react";
-import ErrorImg from "/public/images/backgrounds/errorimg.svg";
-import { Button } from "flowbite-react";
-import Link from "next/link";
-import type { Metadata } from "next";
-export const metadata: Metadata = {
-  title: "Error-404"
-};
-const Error = () => {
-  return (
-    <>
-      <div className="h-screen flex items-center justify-center bg-white dark:bg-darkgray">
-        <div className="text-center">
-          <Image src={ErrorImg} alt="error" className="mb-4" />
-          <h1 className="text-ld text-4xl mb-6">Opps!!!</h1>
-          <h6 className="text-xl text-ld">
-            This page you are looking for could not be found.
-          </h6>
-          <Button
-            color={"primary"}
-            as={Link}
-            href="/"
-            className="w-fit mt-6 mx-auto"
-          >
-            Go Back to Home
-          </Button>
+export default function NotFound() {
+    return (
+        <div className="h-screen flex justify-center items-center">
+            <div className="flex gap-2 items-center">
+                <span className="text-6xl font-bold">404</span>
+                <div className="border-l-2 border-gray-400 ps-2">
+                    <h1 className="text-md font-semibold">Page Not Found!</h1>
+                    <span className="text-xs">Entah apa yang membawa kamu kemari.</span>
+                </div>
+            </div>
         </div>
-      </div>
-    </>
-  );
-};
-
-export default Error;
+    )
+}

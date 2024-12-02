@@ -2,15 +2,15 @@ import { Request, Response } from "express";
 import { AppError } from "../utils/AppError";
 import { ResponseApi } from "../types/ApiType";
 import { loginService, registerService, verifyTokenService } from "../services/AuthService";
-import { decodeJWT, generateRefreshToken, generateToken, refreshTokenJwt, userLogin, verifyToken } from "../config/jwt";
+import { decodeJWT, generateToken, refreshTokenJwt, userLogin, verifyToken } from "../config/jwt";
 import jwt from 'jsonwebtoken'
 import { validationResult } from "express-validator";
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response<ResponseApi>) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({ success: false, msg: "validation required", statusCode: 400, errors: errors.array() });
         }
         const { email, name, password } = req.body;
         const user = await registerService(email, password, name);
@@ -27,7 +27,8 @@ export const register = async (req: Request, res: Response) => {
             return res.status(error.statusCode).json({
                 success: false,
                 statusCode: error.statusCode,
-                msg: error.message
+                msg: error.message,
+                errors: error.message
             });
         }
         return res.status(500).json({ success: false, statusCode: 500, msg: "Internal server error" });
@@ -38,15 +39,7 @@ export const verifyEmail = async (req: Request, res: Response<ResponseApi>) => {
     try {
         const { token } = req.query
         const cektoken = await verifyTokenService(String(token));
-        if (!cektoken) throw new AppError("Something went wrong", 400);
-        const user: any = await userLogin(req);
-        const accessToken = generateToken(user);
-        res.cookie('accessToken', accessToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            maxAge: 15 * 60 * 60 * 1000
-        });
+        // if (!cektoken) throw new AppError("Something went wrong", 400);
         return res.status(200).json({ success: true, statusCode: 200, msg: "Email verified successfully" });
     } catch (error) {
         if (error instanceof AppError) {
@@ -62,6 +55,8 @@ export const verifyEmail = async (req: Request, res: Response<ResponseApi>) => {
 
 
 export const login = async (req: Request, res: Response<ResponseApi>) => {
+    console.log(req.body);
+
     const existsAccessToken = req.cookies.accessToken;
     if (existsAccessToken) { return res.status(400).json({ success: false, statusCode: 400, msg: "You already login." }) }
     const { email, password } = req.body;
@@ -89,7 +84,9 @@ export const login = async (req: Request, res: Response<ResponseApi>) => {
 
         return res.status(200).json({
             success: true, statusCode: 200, msg: "Successfully logged in", data: {
-                user: userValid
+                user: userValid,
+                accessToken: accessToken,
+                teamDataCompleate: userValid.teamMember ? true : false
             }
         });
     } catch (error) {

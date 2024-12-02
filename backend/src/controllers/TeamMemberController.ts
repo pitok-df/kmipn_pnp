@@ -8,13 +8,36 @@ import path from "path";
 import { readHtmlFile } from "../utils/readHtmlFile";
 import { replacePlaceholders } from "../utils/replacePlaceholder";
 import { sendEmail } from "../utils/NodeMailer";
+import { db } from "../config/database";
+import { $Enums, Lecture, Team, TeamMember } from "@prisma/client";
+
+type clientInput = {
+    nama_anggota: string,
+    nim: string,
+    no_wa: string,
+    email: string,
+    prodi: string
+}
+
+type members = {
+    id?: number;
+    teamId: number;
+    userId: string | null;
+    role: $Enums.RoleTeamMember;
+    nim: string;
+    name: string;
+    email: string;
+    no_WA: string;
+    prodi: string;
+    fileKTM: string;
+    createdAt?: Date;
+}
 
 export const storeTeamMember = async (req: Request, res: Response<ResponseApi>) => {
     try {
         const { type } = req.query;
         const fileName = `${process.env.BASEURl}/${type}/${req.file?.filename}`;
         const { teamId, userId, role, nim, name, email, no_WA, prodi } = req.body;
-        console.log(userId);
 
         const teamMember = await createTeamMember(Number(teamId), userId, role, nim, name, email, no_WA, prodi, fileName!);
         res.cookie("teamDataCompleate", true, { httpOnly: true, secure: true, sameSite: "strict" });
@@ -35,17 +58,87 @@ export const storeTeamMember = async (req: Request, res: Response<ResponseApi>) 
     }
 }
 
+
+export const saveTeamMember = async (req: Request, res: Response) => {
+    try {
+        const body = req.body;
+        const dataLecture = {
+            name: body.nama_dosen,
+            nip: body.nip_dosen
+        }
+        const dataTeam = {
+            name: body.nama_tim,
+            categoryID: body.kategori_lomba,
+            institution: body.asal_politeknik
+        }
+
+        const files = req.files as Record<string, Express.Multer.File[]>;
+
+        const user = await userLogin(req);
+        console.log(user);
+
+        const clientInputMembers: clientInput[] = body.members;
+        const dataMembers: members[] = clientInputMembers.map((member, index: number) => {
+            const fieldName = `ktm_agg${index + 1}`;
+            const file = files[fieldName]?.[0];
+            return {
+
+                teamId: 0,
+                userId: index === 0 ? user.id : null,
+                no_WA: member.no_wa,
+                prodi: member.prodi,
+                email: member.email,
+                role: index === 0 ? "leader" : "member",
+                nim: member.nim,
+                name: member.nama_anggota,
+                fileKTM: `${process.env.BASEURl}/${file.path.split("/").filter((filter) => filter !== "public").join("/")}`
+            }
+        })
+
+        const tr = db.$transaction(async () => {
+            const newLecture = await db.lecture.create({
+                data: {
+                    name: dataLecture.name,
+                    nip: dataLecture.nip
+                }
+            });
+            const newTeam = await db.team.create(
+                {
+                    data:
+                        { institution: dataTeam.institution, name: dataTeam.name, categoryID: Number(dataTeam.categoryID), lectureID: newLecture.id }
+                }
+            );
+
+            dataMembers.forEach((member) => {
+                member.teamId = newTeam.id;
+            })
+            await db.teamMember.createMany({ skipDuplicates: true, data: dataMembers })
+            return { team_name: newTeam.name }
+        })
+        return res.status(201).json({
+            success: true,
+            statusCode: 201,
+            msg: "Berhasil menambahkan team dan member baru",
+            data: req.files,
+            teamDataCompleate: true
+        });
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            statusCode: 500,
+            msg: "Internal server error",
+            errors: error.message
+        });
+    }
+}
+
+
 export const getTeamMemberByUserID = async (req: Request, res: Response<ResponseApi>) => {
     try {
         const user = await userLogin(req);
 
-        if (!user?.teamMember) return res.status(400).json({
-            success: false,
-            statusCode: 400,
-            msg: "Complete team member before",
-        });
-
         const teamMember = await getTeamMemberByUserIDService(String(user.id));
+        const submission = teamMember.team.submission;
         const dataMap = {
             teamName: teamMember.team.name,
             categori: teamMember.team.teamCategory.categoriName,
@@ -54,8 +147,8 @@ export const getTeamMemberByUserID = async (req: Request, res: Response<Response
             lectureNip: teamMember.team.lecture.nip,
             linkProposal: teamMember.team.proposal?.fileLink,
             statusProposal: teamMember.team.proposal?.status || 'pending',
-            statusSubmission: teamMember.team.submission?.status || 'pending',
-            round: teamMember.team.submission?.round || "pending",
+            statusSubmission: submission?.status === "passed" ? (submission.round === "final" ? "done" : submission.round) : submission?.status || "pending",
+            round: submission?.status === "passed" ? (submission.round === "preliminary" ? "pending" : submission.round) : submission?.status || "pending",
             verified: teamMember.team.verified,
             teamMembers: teamMember.team.teamMembers.map((member) => ({
                 name: `${member.name}`,
@@ -99,7 +192,7 @@ export const verifyTeam = async (req: Request, res: Response<ResponseApi>) => {
         // mengirim email verifikasi ke user
         const filePath = path.join(__dirname, '../templates/TeamVerifyNotif.html')
         let emailContent = await readHtmlFile(filePath);
-        const link_to_dashboard = `${process.env.FRONTEND_URL}/dashboard`;
+        const link_to_dashboard = `${process.env.FRONTEND_URL}/participant`;
         emailContent = replacePlaceholders(emailContent, {
             "{{ nama_ketua }}": leaderTeam[0].name,
             "{{ nama_team }}": verifyTeam.name,

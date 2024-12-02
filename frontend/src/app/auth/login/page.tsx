@@ -1,39 +1,24 @@
-import Logo from "@/app/dashboard/layout/shared/logo/Logo";
-import React, { useEffect } from "react";
+import LoginForm from "@/components/form/LoginForm";
 import Link from "next/link";
-import type { Metadata } from "next";
-import AuthLogin from "../authforms/AuthLogin";
-export const metadata: Metadata = {
-  title: "Login",
-  description: "Login to your account",
-};
-const BoxedLogin = () => {
-  return (
-    <>
-      <div className="relative overflow-hidden h-screen bg-muted dark:bg-dark">
-        <div className="flex h-full justify-center items-center px-4">
-          <div className="rounded-lg dark:shadow-dark-md shadow-md bg-white dark:bg-darkgray p-6 relative  break-words md:w-[450px] w-full border-none ">
-            <div className="flex h-full flex-col justify-center gap-2 p-0 w-full">
-              <div className="mx-auto">
-                <Logo />
-              </div>
-              <p className="text-lg text-center text-dark my-3">Login to your account</p>
-              <AuthLogin />
-              <div className="flex gap-2 md:text-base text-sm font-medium mt-6 items-center justify-center">
-                <p>Don't have account?</p>
-                <Link
-                  href={"/auth/register"}
-                  className="text-primary text-sm font-medium"
-                >
-                  Create an account
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
 
-export default BoxedLogin;
+export default function LoginPage() {
+    return (
+        <div className="flex justify-center items-center h-screen">
+            <div className="mx-auto flex w-full max-w-lg flex-col rounded-xl border border-border bg-backgroundSecondary p-6">
+                <div className="flex flex-col items-center mb-6">
+                    <h1 className="text-3xl font-semibold">Login</h1>
+                    <p className="text-sm">Login untuk mengakses akunmu</p>
+                </div>
+                <LoginForm />
+                <div className="flex justify-between mt-6">
+                    <div className="form-control">
+                        <Link href="/auth/register" className="link link-underline-hover link-primary text-sm">Belum punya akun? Register</Link>
+                    </div>
+                    <label className="form-label">
+                        <Link href="/" className="link link-underline-hover link-warning text-sm">Kembali ke Homepage?</Link>
+                    </label>
+                </div>
+            </div>
+        </div>
+    );
+}
