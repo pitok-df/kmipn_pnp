@@ -24,11 +24,10 @@ export default function TablePagination<T extends Record<string, React.ReactNode
     columns,
     className,
     loading = false,
-    emptyState = "No data available",
+    emptyState = "No data available in table.",
     search
 }: TableProps<T>) {
     if (loading) return <p>Loading...</p>
-    if (data.length === 0) return <p>{emptyState}</p>
 
     const [searchKey, setSearchKey] = useState<string>("");
     const [itemPerPage, setItemPerPage] = useState(10);
@@ -94,7 +93,7 @@ export default function TablePagination<T extends Record<string, React.ReactNode
                         {
                             paginationData.length === 0 ? (
                                 <tr className="text-center">
-                                    <td colSpan={columns.length} style={{ textAlign: "center" }}>No data available.</td>
+                                    <td colSpan={columns.length} style={{ textAlign: "center" }}>{data.length === 0 ? emptyState : "No data found."} </td>
                                 </tr>
                             ) :
                                 paginationData.map((row, rowIndex) => (

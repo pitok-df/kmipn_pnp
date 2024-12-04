@@ -14,9 +14,19 @@ export type InputProps = {
     id?: string
 }
 
+export type submission = {
+    id: number;
+    teamId: number;
+    team: any;
+    round: string;
+    status: string;
+    createdAt: string;
+}
+
 export interface Categories {
     id: number;
     categoriName: string;
+    deadline: string;
     description: string | null
 }
 
@@ -50,6 +60,8 @@ export interface teamMemberType {
     statusSubmission: string,
     round: string,
     verified: boolean,
+    isPrposalrejected: boolean;
+    reasonRejected: string;
     teamMembers?: any
 }
 export interface teamMember1 {
@@ -65,4 +77,40 @@ export interface teamMember1 {
     round: string,
     verified: boolean,
     teamMembers?: Members[]
+}
+
+export interface Team {
+    id?: number;
+    name: string;
+    categoryID: number;
+    institution: string;
+    lectureID: number;
+    verified: boolean;
+}
+
+export type Proposal = {
+    id?: number;
+    teamId: number;
+    fileLink: string;
+    status: string;
+    comments: string;
+    assessment: any;
+    team: any;
+    file: any;
+}
+
+export interface Assessment {
+    id?: number;
+    proposalID?: number;
+    juriID?: string;
+    score: number;
+}
+
+export interface File {
+    originalName: string;
+    fileName: string;
+    fileSize: number;
+    type: string;
+    path: string;
+    createdAt: string;
 }

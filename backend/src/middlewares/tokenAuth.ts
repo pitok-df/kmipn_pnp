@@ -3,7 +3,6 @@ import { decodeJWT, verifyToken } from "../config/jwt";
 
 export const authenticateJWT = (req: any | Request, res: Response, next: NextFunction) => {
     const accessToken = req.cookies.accessToken ?? (req.headers?.authorization! && req.headers?.authorization!.split(" ")[1]) ?? null;
-    console.log("Access Token di Middleware:", accessToken);
     if (!accessToken) {
         return res.status(401).json({ message: "Token is required." });
     }

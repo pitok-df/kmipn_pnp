@@ -8,9 +8,6 @@ import { userLogin } from "../config/jwt";
 
 export const AllUser = async (req: Request, res: Response<ResponseApi>, next: NextFunction) => {
     try {
-        const userl = await userLogin(req);
-        console.log(userl);
-
         const users = await GetAllUser();
         return res.status(200).json({ success: true, statusCode: 200, msg: "Successfully get data", data: users });
     } catch (error: any) {

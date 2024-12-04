@@ -45,6 +45,7 @@ model Category {
   id           Int      @id @default(autoincrement())
   categoriName String   @db.VarChar(100)
   description  String?
+  deadline     DateTime
   createdAt    DateTime @default(now())
   teamCategory Team[]
 }
@@ -70,7 +71,7 @@ model Team {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @default(now()) @updatedAt
   teamMembers  TeamMember[]
-  proposal     Proposal?
+  proposal     Proposal[]
   submission   Submission?
 }
 
@@ -96,20 +97,34 @@ model TeamMember {
 }
 
 enum statusProposal {
-  uploaded
+  approve
   pending
-  verified
+  rejected
+}
+
+model File {
+  id           String    @id @default(cuid())
+  originalName String
+  fileName     String
+  fileSize     Int
+  type         String
+  path         String
+  createdAt    DateTime  @default(now())
+  proposals    Proposal?
 }
 
 model Proposal {
   id         Int            @id @default(autoincrement())
   title      String         @db.VarChar(125)
-  teamId     Int            @unique
+  teamId     Int
   team       Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
   fileLink   String?
-  status     statusProposal @default(uploaded)
+  status     statusProposal @default(pending)
   createdAt  DateTime       @default(now())
+  comments   String?
   assessment Assesment?
+  fileId     String         @unique
+  file       File           @relation(fields: [fileId], references: [id], onDelete: Cascade)
 }
 
 model Assesment {

@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfo } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { Members, teamMemberType } from "@/lib/types";
 import ModalCustom from "@/components/modal/Modal";
 import VerifikasiTeam from "./VerifikasiTeam";
+import FotoKTM from "./FotoKtm";
 
 export default function DetailTeam({ teamMember }: { teamMember: teamMemberType }) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -17,9 +18,9 @@ export default function DetailTeam({ teamMember }: { teamMember: teamMemberType 
         <div>
             <button
                 onClick={handleModal}
-                className="btn btn-sm btn-solid-primary rounded-full gap-2"
+                className="btn btn-sm btn-solid-success rounded-full gap-2"
             >
-                <FontAwesomeIcon icon={faInfo} />
+                <FontAwesomeIcon icon={faCheck} />
             </button>
 
             <ModalCustom
@@ -29,30 +30,30 @@ export default function DetailTeam({ teamMember }: { teamMember: teamMemberType 
                 children={
                     <>
                         <div className="grid grid-cols-[1fr_2fr] gap-3 mb-6">
-                            <span className="text-sm font-semibold">Nama Tim </span>
-                            <span className="text-sm font-medium">: {teamMember.teamName}</span>
-                            <span className="text-sm font-semibold">Kategori Lomba </span>
-                            <span className="text-sm font-medium">: {teamMember.categori}</span>
-                            <span className="text-sm font-semibold">Politeknik Asal</span>
-                            <span className="text-sm font-medium">: {teamMember.institution}</span>
-                            <span className="text-sm font-semibold">Jumlah Anggota</span>
-                            <span className="text-sm font-medium">: {teamMember.teamMembers.length}</span>
-                            <span className="text-sm font-semibold">Dosen Pendamping</span>
-                            <span className="text-sm font-medium">: {teamMember.lectureName} ({teamMember.lectureNip})</span>
+                            <span className="text-base font-semibold">Nama Tim </span>
+                            <span className="text-base font-medium">: {teamMember.teamName}</span>
+                            <span className="text-base font-semibold">Kategori Lomba </span>
+                            <span className="text-base font-medium">: {teamMember.categori}</span>
+                            <span className="text-base font-semibold">Politeknik Asal</span>
+                            <span className="text-base font-medium">: {teamMember.institution}</span>
+                            <span className="text-base font-semibold">Jumlah Anggota</span>
+                            <span className="text-base font-medium">: {teamMember.teamMembers.length}</span>
+                            <span className="text-base font-semibold">Dosen Pendamping</span>
+                            <span className="text-base font-medium">: {teamMember.lectureName} ({teamMember.lectureNip})</span>
                         </div>
                         <h1 className="text-lg font-bold mb-3">Detail Anggota</h1>
                         <div className="grid grid-cols-[1fr_2fr] gap-3 mb-2">
                             {
                                 members.map((member, index) => (
                                     <React.Fragment key={`member-${index}`}>
-                                        <span className="text-sm font-semibold">Nama Anggota - {index + 1}</span>
-                                        <span className="text-sm font-medium">: {member.name} {member.role === "leader" && "(Ketua)"}</span>
-                                        <span className="text-sm font-semibold">NIM  </span>
-                                        <span className="text-sm font-medium">: {member.nim}</span>
-                                        <span className="text-sm font-semibold">Prodi  </span>
-                                        <span className="text-sm font-medium">: {member.prodi}</span>
-                                        <span className="text-sm font-semibold">Foto KTM  </span>
-                                        <a href={member.fileKTM} target="_blank" className="text-sm font-medium link-primary w-max">: lihat foto</a>
+                                        <span className="text-base font-semibold">Nama Anggota - {index + 1}</span>
+                                        <span className="text-base font-medium">: {member.name} {member.role === "leader" && "(Ketua)"}</span>
+                                        <span className="text-base font-semibold">NIM  </span>
+                                        <span className="text-base font-medium">: {member.nim}</span>
+                                        <span className="text-base font-semibold">Prodi  </span>
+                                        <span className="text-base font-medium">: {member.prodi}</span>
+                                        <span className="text-base font-semibold">Foto KTM  </span>
+                                        <FotoKTM imageUrl={member.fileKTM} />
                                     </React.Fragment>
                                 ))
                             }

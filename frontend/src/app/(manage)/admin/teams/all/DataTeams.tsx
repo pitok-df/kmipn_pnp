@@ -19,13 +19,14 @@ export default function DataTeams() {
     }));
 
     return (
-        <div>
+        <>
             <TablePagination
                 className={"table-compact"}
                 data={filterTeams}
                 columns={[
                     { header: "No", key: null, render: (row, index) => index + 1 },
                     { header: "Nama Tim", key: "teamName" },
+                    { header: "Submission", key: null, render: (row) => { return row.statusSubmission ? row.statusSubmission : "pending" } },
                     { header: "Asal Politeknik", key: "institution" },
                     { header: "Dosen Pendamping", key: "lectureName" },
                     {
@@ -48,6 +49,6 @@ export default function DataTeams() {
                     },
                 ]}
             />
-        </div>
+        </>
     );
 }

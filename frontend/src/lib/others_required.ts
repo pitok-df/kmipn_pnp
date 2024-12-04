@@ -57,3 +57,12 @@ export const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, getter
         [e.target.name]: e.target.value
     })
 }
+
+export const formatDate = (date: string) => {
+    const objDate = new Date(date);
+    return objDate.toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+    })
+}

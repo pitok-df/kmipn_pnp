@@ -59,6 +59,10 @@ export const SidebarItems: sidebarItem[] =
                             route: "/admin/teams/proposal",
                             title: "Proposal Tim"
                         },
+                        {
+                            route: "/admin/teams/submission",
+                            title: "Pengajuan"
+                        },
                     ]
                 },
             ]

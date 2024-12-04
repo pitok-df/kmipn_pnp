@@ -138,6 +138,8 @@ export const getTeamMemberByUserID = async (req: Request, res: Response<Response
         const user = await userLogin(req);
 
         const teamMember = await getTeamMemberByUserIDService(String(user.id));
+        const lastestProposal = teamMember.team.proposal.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+        const isPrposalrejected = lastestProposal?.status === "rejected" ? true : false;
         const submission = teamMember.team.submission;
         const dataMap = {
             teamName: teamMember.team.name,
@@ -145,8 +147,8 @@ export const getTeamMemberByUserID = async (req: Request, res: Response<Response
             institution: teamMember.team.institution,
             lectureName: teamMember.team.lecture.name,
             lectureNip: teamMember.team.lecture.nip,
-            linkProposal: teamMember.team.proposal?.fileLink,
-            statusProposal: teamMember.team.proposal?.status || 'pending',
+            linkProposal: lastestProposal?.fileLink || null,
+            statusProposal: lastestProposal?.status || "Pending",
             statusSubmission: submission?.status === "passed" ? (submission.round === "final" ? "done" : submission.round) : submission?.status || "pending",
             round: submission?.status === "passed" ? (submission.round === "preliminary" ? "pending" : submission.round) : submission?.status || "pending",
             verified: teamMember.team.verified,
@@ -158,7 +160,9 @@ export const getTeamMemberByUserID = async (req: Request, res: Response<Response
                 role: member.role,
                 prodi: member.prodi,
                 fileKTM: member.fileKTM
-            }))
+            })),
+            isPrposalrejected: isPrposalrejected,
+            reasonRejected: lastestProposal?.comments || null
         }
         return res.status(200).json({
             success: true,

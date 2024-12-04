@@ -25,6 +25,11 @@ export const getDataTeamService = async () => {
         include: { teamMembers: { orderBy: { role: "asc" } }, lecture: true, proposal: true, teamCategory: true, submission: true }, orderBy: { verified: "asc" }
     });
 
+    const lastestProposal = dataTeam.map((item) => ({
+        status: item.proposal.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
+    })
+    )
+
     const dataMap = dataTeam.map((item) => ({
         id: item.id,
         teamName: item.name,
@@ -42,8 +47,8 @@ export const getDataTeamService = async () => {
             role: member.role,
             fileKTM: member.fileKTM
         })),
-        linkProposal: item.proposal?.fileLink,
-        statusProposal: item.proposal?.status,
+        linkProposal: null,
+        statusProposal: null,
         statusSubmission: item.submission?.status || null
     }));
 

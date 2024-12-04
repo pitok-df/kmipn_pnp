@@ -19,6 +19,8 @@ export default function InformasiTeam() {
     }
 
     const teamData: teamMemberType = data.data;
+    console.log(teamData);
+
     return (
         <>
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
@@ -66,10 +68,36 @@ export default function InformasiTeam() {
                     <h1 className="font-bold">Proposal</h1>
                     <span className="mb-2">
                         {
+                            // teamData.verified ?
+                            //     teamData.linkProposal ?
+                            //         <a href={teamData.linkProposal} className="font-normal text-blue-600" target="_blank">
+                            //             {teamData?.linkProposal.split('/')[4]}
+                            //         </a> :
+                            //         (teamData.isPrposalrejected ?
+                            //             <>
+                            //                 <span className="text-error">{teamData.reasonRejected}, upload ulang proposal!.</span>
+                            //                 <UploadProposal />
+                            //             </> :
+                            //             <>
+                            //                 <UploadProposal />
+                            //             </>
+                            //         ) :
+                            //     <span className="text-warning">Menunggu diverifikasi admin.</span>
                             teamData.verified ?
-                                teamData.linkProposal ?
-                                    <a href={teamData.linkProposal} className="font-normal text-blue-600" target="_blank">{teamData?.linkProposal.split('/')[4]}</a> :
-                                    (<UploadProposal />) :
+                                (
+                                    teamData.isPrposalrejected ?
+                                        <>
+                                            <span className="text-error">{teamData.reasonRejected}, upload ulang proposal!.</span>
+                                            <UploadProposal />
+                                        </>
+                                        : (
+                                            teamData.linkProposal ?
+                                                <a href={teamData.linkProposal} className="font-normal text-blue-600" target="_blank">
+                                                    {teamData?.linkProposal.split('/')[4]}
+                                                </a> :
+                                                <UploadProposal />
+                                        )
+                                ) :
                                 <span className="text-warning">Menunggu diverifikasi admin.</span>
                         }
                     </span>

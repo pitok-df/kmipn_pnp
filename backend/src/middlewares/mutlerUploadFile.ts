@@ -1,5 +1,8 @@
 import fs from "fs";
 import multer from "multer"
+import path from "path";
+
+export const uploadDir = path.join(__dirname, '../../public')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

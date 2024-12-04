@@ -1,9 +1,10 @@
-'use client'
+import { Metadata } from "next";
 
-import { useRouter } from "next/navigation";
+export const metadata: Metadata = {
+    title: 'Unauthorized',
+};
 
 export default function unauthorized() {
-    const router = useRouter();
     return (
         <>
             <div className="h-screen flex flex-col items-center justify-center bg-white dark:bg-gray-900">
@@ -14,7 +15,6 @@ export default function unauthorized() {
                         Akses ditolak.
                     </h6>
                 </div>
-                <span className="link mt-4" onClick={() => router.back()}>Kembali ke halaman sebelumnya</span>
             </div>
         </>
     );

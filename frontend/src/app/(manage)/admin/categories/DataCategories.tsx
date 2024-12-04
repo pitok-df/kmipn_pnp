@@ -6,6 +6,7 @@ import useSWR from "swr";
 import EditCategory from "./EditCategory";
 import DeleteCategory from "./DeleteCategory";
 import TablePagination from "@/components/Table/TablePagination";
+import { formatDate } from "@/lib/others_required";
 
 export default function DataCategories() {
     const { data: data, error } = useSWR("/api/v1/categories-close", fetcher);
@@ -31,6 +32,11 @@ export default function DataCategories() {
                 columns={[
                     { header: "No", key: null, render: (row, index) => index + 1 },
                     { header: "Nama Kategori", key: "categoriName" },
+                    {
+                        header: "Deadline", key: null, render(row, index) {
+                            return formatDate(row.deadline);
+                        },
+                    },
                     { header: "Deskripsi", key: "description" },
                     {
                         header: "Aksi", key: null,

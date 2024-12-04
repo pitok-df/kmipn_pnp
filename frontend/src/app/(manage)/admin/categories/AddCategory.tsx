@@ -10,7 +10,7 @@ import { mutate } from "swr";
 
 export default function AddCategory() {
     const modalCheckBox = useRef(null);
-    const [form, setForm] = useState<{ categoriName: string, description: string }>({ categoriName: "", description: "" });
+    const [form, setForm] = useState<{ categoriName: string, description: string, deadline: string }>({ categoriName: "", description: "", deadline: "" });
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({ categoriName: null })
 
@@ -22,7 +22,7 @@ export default function AddCategory() {
     }
 
     const clear = () => {
-        setForm({ categoriName: "", description: "" });
+        setForm({ categoriName: "", description: "", deadline: "" });
         setErrors({ categoriName: null })
     }
 
@@ -44,6 +44,8 @@ export default function AddCategory() {
                 handleCloseModal();
             }
         } catch (error: any) {
+            console.log(error);
+
             if (error.status === 400) {
                 const errors = error.response.data.errors;
                 setErrors(errors)
@@ -85,6 +87,23 @@ export default function AddCategory() {
                                 placeholder="IOT"
                                 name="categoriName"
                                 value={form.categoriName}
+                                onChange={(e) => handleInputChange(e)}
+                            />
+                            {errors.categoriName && (
+                                <label className="form-label">
+                                    <span className="form-label-alt text-error">{errors.categoriName}</span>
+                                </label>
+                            )}
+                        </div>
+                        <div className="form-field">
+                            <label htmlFor="" className="form-label">Nama Kategori</label>
+                            <input
+                                type="date"
+                                className={`input max-w-full ${errors.categoriName && "input-error"}`}
+                                required
+                                placeholder="IOT"
+                                name="deadline"
+                                value={form.deadline}
                                 onChange={(e) => handleInputChange(e)}
                             />
                             {errors.categoriName && (

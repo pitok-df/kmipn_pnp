@@ -11,6 +11,7 @@ const allowedPathByRole: { [key: string]: string[] } = {
         "/admin",
         "/admin/categories",
         "/admin/teams/proposal",
+        "/admin/teams/submission",
         "/admin/teams/all",
         "/admin/users",
     ],
@@ -25,7 +26,7 @@ export async function middleware(req: NextRequest) {
 
     if (!token) {
         // jika user mengakses halaman login, biarkan mereka di halaman tersebut
-        if (pathname.startsWith("/auth/login")) {
+        if (pathname.startsWith("/auth/login") || pathname.startsWith("/auth/register")) {
             return NextResponse.next();
         }
         // jika user belum login, arahkan ke halaman login
@@ -36,11 +37,11 @@ export async function middleware(req: NextRequest) {
 
         const currentTime = Math.floor(new Date().getTime() / 1000)
         const expire = token.exp;
-
+        console.log(currentTime);
         // jika token sudah expire, maka redirect pengguna ke halaman login
         if (currentTime > expire) {
             // jika si pengguna sudah di halaman login, yasudah biarin.
-            if (pathname.startsWith("/auth/login")) {
+            if (pathname.startsWith("/auth/login") || pathname.startsWith("/auth/register")) {
                 return NextResponse.next();
             }
 
@@ -53,15 +54,15 @@ export async function middleware(req: NextRequest) {
         req.headers.set("Authorization", `Bearer ${token.accessToken}`);
 
         if (roleUser === "admin") {
-            if (pathname.startsWith("/auth/login")) {
+            if (pathname.startsWith("/auth/login") || pathname.startsWith("/auth/register")) {
                 return NextResponse.redirect(new URL("/admin", req.nextUrl))
             }
         } else if (roleUser === "participant") {
-            if (pathname.startsWith("/auth/login")) {
+            if (pathname.startsWith("/auth/login") || pathname.startsWith("/auth/register")) {
                 return NextResponse.redirect(new URL("/participant", req.nextUrl))
             }
         } else if (roleUser === "juri") {
-            if (pathname.startsWith("/auth/login")) {
+            if (pathname.startsWith("/auth/login") || pathname.startsWith("/auth/register")) {
                 return NextResponse.redirect(new URL("/juri", req.nextUrl));
             }
         }
@@ -89,5 +90,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/auth/login", "/admin/:path*", "/participant/:path*", "/juri/:path*"]
+    matcher: ["/auth/login", "/auth/register", "/admin/:path*", "/participant/:path*", "/juri/:path*"]
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import TablePagination from "@/components/Table/TablePagination";
-import { fetcher } from "@/lib/api";
+import { api, fetcher } from "@/lib/api";
 import { User } from "@/lib/types";
 import useSWR from "swr";
 import EditeUser from "./EditeUser";

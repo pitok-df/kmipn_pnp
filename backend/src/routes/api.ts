@@ -6,7 +6,7 @@ import { createCategory, deleteCategory, getAllCategory, getAllCategoryClose, up
 import { loginValidator } from "../validators/LoginValidator";
 import { createTeam, getDataTeam } from "../controllers/TeamController";
 import { createLecture } from "../controllers/LectureController";
-import { createProposal } from "../controllers/ProposalController";
+import { createProposal, deleteProposal, getAllproposal, updateProposal } from "../controllers/ProposalController";
 import { getTeamMemberByUserID, saveTeamMember, storeTeamMember, verifyTeam } from "../controllers/TeamMemberController";
 import { checkDataCompleate } from "../middlewares/checkDataCompleate";
 import { userLogin } from "../config/jwt";
@@ -16,6 +16,8 @@ import { uploadFile } from "../middlewares/mutlerUploadFile";
 import { uploadHandler } from "../middlewares/uploadKtm";
 import { db } from "../config/database";
 import { RegisterValidator } from "../validators/RegisterValidator";
+import { getAllSubmissions } from "../controllers/SubmissionController";
+import { getInfoDashboardAdmin } from "../controllers/DashboardController";
 
 const router = Router();
 
@@ -44,14 +46,21 @@ router.post('/login', loginValidator(), login);
 router.post('/verify-email', verifyEmail);
 router.post('/logout', logout);
 
+router.get("/submissions", authenticateJWT, getAllSubmissions)
+
 router.post("/lecture", authenticateJWT, createLecture);
 router.post("/team", authenticateJWT, createTeam);
+
 router.post("/upload-proposal", authenticateJWT, uploadFile.single("file_proposal"), createProposal);
+router.get("/proposals", authenticateJWT, getAllproposal);
+router.delete("/proposals/:id", authenticateJWT, deleteProposal);
+router.put("/proposals/:id", authenticateJWT, updateProposal);
 router.post(
     "/save-team-member",
     authenticateJWT,
     uploadFile.fields([
-        { name: 'ktm_agg1', maxCount: 1 }, { name: 'ktm_agg2', maxCount: 1 },
+        { name: 'ktm_agg1', maxCount: 1 },
+        { name: 'ktm_agg2', maxCount: 1 },
         { name: 'ktm_agg3', maxCount: 1 }
     ]),
     saveTeamMember
@@ -63,6 +72,7 @@ router.get("/team-member", authenticateJWT, getTeamMemberByUserID);
 router.put("/team-member/:teamID", authenticateJWT, verifyTeam);
 router.get("/check-team-compleate", authenticateJWT, CheckUserTeam);
 
+router.get("/admin/dashboard", getInfoDashboardAdmin)
 router.get('/categories', getAllCategory);
 router.post('/categories', authenticateJWT, updateCategoriValidator, createCategory);
 router.get('/categories-close', authenticateJWT, getAllCategoryClose);
